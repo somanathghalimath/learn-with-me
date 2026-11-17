@@ -167,10 +167,11 @@ function renderLetter() {
   elements.notebookLayer.replaceChildren();
   const kannadaRuling = activeSet.notebookGuides === "kannada";
   if (activeSet.notebookGuides === "grid") {
-    for (let x = 0; x <= viewportWidth; x += 80)
-      addNotebookLine(x, 0, x, 400, "grid-line");
-    for (let y = 0; y <= 400; y += 80)
-      addNotebookLine(0, y, viewportWidth, y, "grid-line");
+    const { x, y, size } = letter.numberSquare;
+    for (const edge of [x, x + size])
+      addNotebookLine(edge, y, edge, y + size, "grid-line");
+    for (const edge of [y, y + size])
+      addNotebookLine(x, edge, x + size, edge, "grid-line");
   } else if (activeSet.notebookGuides) {
     const lines = kannadaRuling
       ? window.KANNADA_NOTEBOOK.lines
@@ -195,7 +196,7 @@ function renderLetter() {
   document.querySelector("#svgDescription").textContent = kannadaRuling
     ? "Two notebook lines guide the main Kannada letter body. Upper curls and lower marks can extend beyond them."
     : activeSet.notebookGuides === "grid"
-      ? "Square notebook cells guide digit height and spacing. Digits are written from left to right."
+      ? "The complete number fits inside one square. Digits are written from left to right."
       : activeSet.notebookGuides
         ? "Four notebook lines: red at the top and bottom, blue in the middle. The letter forms one stroke at a time."
         : "The strokes appear one at a time in writing order.";

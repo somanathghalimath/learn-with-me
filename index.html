@@ -33,7 +33,7 @@
           ></a
         >
         <span class="header-note"
-          >Made for little hands &amp; big discoveries
+          >Made for little hands and big discoveries
           <span aria-hidden="true">✳</span></span
         >
         <a class="home-button" href="#/" aria-label="Home"
@@ -49,7 +49,6 @@
       </header>
       <nav class="navigation" aria-label="Notebook navigation">
         <a id="backLink" href="#/">← Back</a>
-        <ol id="breadcrumbs"></ol>
       </nav>
       <main id="main" tabindex="-1">
         <section id="selectionPage" aria-labelledby="pageTitle">
@@ -91,9 +90,6 @@
         <section id="lessonPage" aria-label="Handwriting demonstration" hidden>
           <div class="lesson-topline">
             <h1 id="categoryTitle">Capital Letters</h1>
-            <span class="paper-tab"
-              >LKG · <span id="subjectLabel">English</span></span
-            >
           </div>
           <div class="lesson-card">
             <div class="lesson-heading">
@@ -212,19 +208,81 @@
                   class="control-button primary"
                   id="playButton"
                   type="button"
+                  aria-label="Play"
+                  title="Play"
                 >
-                  <span aria-hidden="true">▶</span> Play</button
-                ><button class="control-button" id="pauseButton" type="button">
-                  <span aria-hidden="true">Ⅱ</span> Pause</button
-                ><button class="control-button" id="replayButton" type="button">
-                  <span aria-hidden="true">↻</span> Replay</button
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="m9 5 11 7-11 7Z"
+                      fill="currentColor"
+                      stroke="none"
+                    />
+                  </svg></button
+                ><button
+                  class="control-button"
+                  id="pauseButton"
+                  type="button"
+                  aria-label="Pause"
+                  title="Pause"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M8 5v14M16 5v14" stroke-width="4" />
+                  </svg></button
+                ><button
+                  class="control-button"
+                  id="replayButton"
+                  type="button"
+                  aria-label="Replay"
+                  title="Replay"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M4 9a8 8 0 1 1 0 6M4 3v6h6" />
+                  </svg></button
                 ><button
                   id="hearButton"
                   class="control-button"
                   type="button"
                   hidden
+                  aria-label="Hear"
+                  title="Hear"
                 >
-                  <span aria-hidden="true">♪</span> Hear
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="m11 5-5 4H3v6h3l5 4ZM15 8a6 6 0 0 1 0 8M18 5a10 10 0 0 1 0 14"
+                    />
+                  </svg>
                 </button>
               </div>
               <label class="speed-option" for="speedSelect"

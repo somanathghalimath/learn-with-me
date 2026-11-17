@@ -67,7 +67,7 @@ const assert=require('node:assert/strict');
   }
   for(const set of ['numbers','kannadaSwaras','kannadaVyanjanas']){
    await page.evaluate(key=>changeSet(key),set);
-   assert.equal(await page.locator('#notebookLayer line').count(),set==='numbers'?12:2);
+   assert.equal(await page.locator('#notebookLayer line').count(),set==='numbers'?4:2);
   }
   await page.evaluate(key=>changeSet(key),'uppercase');
   assert.equal(await page.locator('#notebookLayer line').count(),4);

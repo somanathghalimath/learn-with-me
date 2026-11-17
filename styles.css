@@ -354,13 +354,6 @@ footer a {
   font-size: 30px;
   margin: 0;
 }
-.paper-tab {
-  font-size: 10px;
-  padding: 5px 16px;
-  background: #e1e6d8;
-  border: 1px solid #bec7b1;
-  border-radius: 6px 6px 0 0;
-}
 .lesson-card {
   position: relative;
   background: var(--paper);
@@ -763,9 +756,6 @@ summary span:first-child {
   .lesson-topline h1 {
     font-size: 27px;
   }
-  .paper-tab {
-    padding: 5px 10px;
-  }
   .letter-title h2 {
     font-size: 25px;
   }
@@ -865,5 +855,140 @@ summary span:first-child {
 @media (max-width: 650px) {
   .canvas-wrap.wide {
     min-width: 0;
+  }
+}
+
+/* Familiar symbols with accessible names; no visible playback labels. */
+.control-button {
+  display: inline-grid;
+  place-items: center;
+  width: 52px;
+  min-width: 48px;
+  padding: 10px;
+  flex: 0 0 auto;
+}
+.control-button svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+@media (max-width: 650px) {
+  .playback-controls {
+    width: auto;
+  }
+  .playback-bar {
+    justify-content: space-between;
+  }
+  .speed-option {
+    margin-left: 0;
+  }
+}
+
+/* Remove decorative home copy while retaining functional notebook labels. */
+.home-illustration {
+  display: none;
+}
+.is-home .navigation,
+.is-home .page-intro,
+.is-home .workbook-note,
+.is-home footer {
+  display: none;
+}
+.is-home .tile-label,
+.is-home .tile-sample,
+.is-home .tile-subtitle,
+.is-home .notebook-tile p {
+  display: none;
+}
+.is-home .header-note {
+  display: block;
+  margin-left: auto;
+  font: clamp(17px, 2.3vw, 24px) var(--hand);
+  text-align: center;
+}
+.is-home .header-note span {
+  display: none;
+}
+.is-home .home-button {
+  margin-left: 0;
+}
+.is-home .notebook-shelf {
+  grid-template-columns: minmax(0, 350px);
+  justify-content: center;
+  padding: 70px 12px;
+}
+.is-home .notebook-tile {
+  min-height: 360px;
+  justify-content: center;
+  align-items: center;
+}
+.is-home .home-illustration {
+  display: block;
+  width: min(100%, 230px);
+  height: 230px;
+}
+@media (max-width: 650px) {
+  .is-home .app-header {
+    gap: 12px;
+  }
+  .is-home .notebook-shelf {
+    padding-top: 45px;
+  }
+  .is-home .notebook-tile {
+    min-height: 330px;
+  }
+  .is-home .brand {
+    gap: 0;
+  }
+  .is-home .brand img {
+    width: 28px;
+  }
+  .is-home .home-button {
+    width: 40px;
+    flex-shrink: 0;
+  }
+}
+
+/* Keep functional identity and notebook navigation labels on the home page. */
+.is-home .brand span {
+  display: block;
+}
+.is-home .brand small {
+  display: none;
+}
+.is-home .notebook-tile h2,
+.is-home .notebook-tile .tile-open {
+  display: block;
+}
+.is-home .home-illustration {
+  order: 0;
+}
+.is-home .notebook-tile h2 {
+  order: 1;
+  align-self: stretch;
+  margin-top: 10px;
+}
+.is-home .notebook-tile .tile-open {
+  order: 2;
+  padding-top: 12px;
+}
+@media (max-width: 650px) {
+  .is-home .brand span {
+    font-size: 22px;
+  }
+  .is-home .app-header {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 112px;
+    padding: 15px 0;
+    gap: 10px;
+  }
+  .is-home .header-note {
+    order: 3;
+    width: 100%;
+    margin: 0;
+  }
+  .is-home .home-button {
+    margin-left: auto;
   }
 }

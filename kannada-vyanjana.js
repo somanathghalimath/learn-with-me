@@ -450,33 +450,33 @@ window.KANNADA_VYANJANAS = [
     "id": "ddha",
     "strokes": [
       {
-        "d": "M 156.31 111.63 C 94.75 131.49 68.94 208.94 114.61 246.67 C 154.33 278.44 188.09 254.61 203.97 228.79 C 223.83 270.50 273.48 274.47 293.33 236.74 C 331.06 169.22 249.65 89.79 156.31 111.63 L 156.31 93.76",
-        "prompt": "Go down around both bowls, then curve left across the top to close the body.",
+        "d": "M 161.48 127.65 C 103.22 146.44 75.03 210.34 112.62 247.92 C 152.08 285.50 195.30 259.19 206.58 225.37 C 223.49 268.59 272.35 279.87 293.02 246.04 C 319.33 204.70 268.59 155.84 240.40 168.99 C 193.42 187.79 257.32 206.58 276.11 184.03 C 302.42 140.81 212.21 114.50 161.48 127.65 L 161.48 110.74",
+        "prompt": "Curve down through both bowls, loop left inside the right side, then curve across the top back to the start.",
         "sourceFrames": [
           0,
-          18
+          29
         ]
       },
       {
-        "d": "M 88.79 93.76 L 261.56 93.76 C 309.22 93.76 327.09 79.86 297.30 61.99",
+        "d": "M 93.83 110.74 L 257.32 110.74 C 300.54 110.74 321.21 80.67 281.74 61.88",
         "prompt": "Lift. Go right across the head stroke, then curl up.",
         "sourceFrames": [
-          19,
-          27
+          30,
+          38
         ]
       },
       {
-        "d": "M 203.97 282.41 L 203.97 326.10",
+        "d": "M 210.34 289.26 L 210.34 326.85",
         "prompt": "Lift. Draw the short lower mark downwards.",
         "sourceFrames": [
-          28,
-          29
+          39,
+          41
         ]
       }
     ],
-    "source": "https://commons.wikimedia.org/wiki/File:Kannada-alphabet-dhha.gif",
-    "referenceImage": "vyanjana-references/ddha.png",
-    "reconstructionNote": "Extended the body centreline into the head/middle stroke within the broad source junction; no extra pen lift.",
+    "source": "https://commons.wikimedia.org/wiki/File:Kannada-alphabet-dda.gif",
+    "referenceImage": "vyanjana-references/dda.png",
+    "reconstructionNote": "Identity correction: use the looped body and separate lower mark visible in the source dda.gif, matching CIIL–NCERT Kannada Primer PDF page 47 (printed page 30). The old dhha.gif has no inner loop and was incorrectly mapped to this character. Original dhha reference retained for provenance.",
     "movementNote": "Lift the pencil only between the numbered strokes."
   },
   {

@@ -16,6 +16,13 @@ for (const [name, checksum] of Object.entries(manifest.unchangedFiles)) {
     .digest("hex");
   assert.equal(actual, checksum, `Preserved source file: ${name}`);
 }
+for (const [name, entry] of Object.entries(manifest.adaptedFiles || {})) {
+  const actual = require("node:crypto")
+    .createHash("sha256")
+    .update(fs.readFileSync(path.resolve(__dirname, "..", name)))
+    .digest("hex");
+  assert.equal(actual, entry.currentSHA256, `Documented derivative: ${name}`);
+}
 (async () => {
   const browser = await chromium.launch({
     executablePath: process.env.CHROME_PATH || "/usr/bin/google-chrome",
@@ -33,6 +40,17 @@ for (const [name, checksum] of Object.entries(manifest.unchangedFiles)) {
     });
     await page.goto(base + "/");
     await page.evaluate(() => document.fonts.ready);
+    // Decorative home copy is hidden; the notebook title and action remain functional.
+    assert.equal(await page.locator(".page-intro").isVisible(), false);
+    assert.equal(await page.locator(".workbook-note").isVisible(), false);
+    assert.equal(
+      await page.getByRole("heading", { name: "LKG", exact: true }).isVisible(),
+      true,
+    );
+    assert.equal(
+      (await page.locator(".header-note").innerText()).trim(),
+      "Made for little hands and big discoveries",
+    );
     // Complete hierarchy through actual links, including Back and Home.
     assert.equal(await page.locator(".notebook-tile").count(), 1);
     assert.equal(await page.locator(".notebook-tile h2").textContent(), "LKG");
@@ -44,15 +62,13 @@ for (const [name, checksum] of Object.entries(manifest.unchangedFiles)) {
       await page.locator(".notebook-tile h2").allTextContents(),
       ["English", "Maths", "Kannada"],
     );
-    const covers = await page
-      .locator(".notebook-tile")
-      .evaluateAll((tiles) =>
-        tiles.map((t) => ({
-          background: getComputedStyle(t).backgroundColor,
-          width: t.offsetWidth,
-          height: t.offsetHeight,
-        })),
-      );
+    const covers = await page.locator(".notebook-tile").evaluateAll((tiles) =>
+      tiles.map((t) => ({
+        background: getComputedStyle(t).backgroundColor,
+        width: t.offsetWidth,
+        height: t.offsetHeight,
+      })),
+    );
     covers.forEach((c) => assert.deepEqual(c, covers[0]));
     for (const [subject, labels] of [
       ["english", ["Capital Letters", "Small Letters", "Combination"]],
@@ -76,6 +92,27 @@ for (const [name, checksum] of Object.entries(manifest.unchangedFiles)) {
           await page.locator("#categoryTitle").textContent(),
           labels[i],
         );
+        assert.equal(
+          await page.locator("#backLink").textContent(),
+          "← " + subject[0].toUpperCase() + subject.slice(1),
+        );
+        assert.equal(
+          await page.locator("#breadcrumbs,.paper-tab,#subjectLabel").count(),
+          0,
+        );
+        for (const [id, label] of [
+          ["playButton", "Play"],
+          ["pauseButton", "Pause"],
+          ["replayButton", "Replay"],
+          ["hearButton", "Hear"],
+        ]) {
+          const button = page.locator("#" + id);
+          assert.equal((await button.textContent()).trim(), "");
+          assert.ok(
+            (await button.getAttribute("aria-label")).startsWith(label),
+          );
+          assert.equal(await button.locator("svg").count(), 1);
+        }
         await page.locator("#backLink").click();
         await page.locator("#selectionPage").waitFor();
       }
@@ -206,8 +243,17 @@ for (const [name, checksum] of Object.entries(manifest.unchangedFiles)) {
               component.firstStroke === expectedStroke,
               "Component order " + c.name,
             );
-            near(component.scale, 1, "No composition scaling");
-            near(component.dy, 0, "Shared baseline");
+            if (key !== "numbers") {
+              near(component.scale, 1, "No English composition scaling");
+              near(component.dy, 0, "Shared English baseline");
+            } else {
+              ensure(
+                component.scale > 0 && component.scale <= 1,
+                "Uniform number scale",
+              );
+              near(component.scale, c.components[0].scale, "Same digit height");
+              near(component.dy, c.components[0].dy, "Same digit baseline");
+            }
             for (
               let j = 0;
               j < original.strokes.length;
@@ -227,12 +273,12 @@ for (const [name, checksum] of Object.entries(manifest.unchangedFiles)) {
               source.setAttribute("d", original.strokes[j].d);
               const length = source.getTotalLength(),
                 after = p.getTotalLength();
-              near(after, length, "Unchanged path length");
+              near(after, length * component.scale, "Uniform path length");
               for (const f of [0, 0.2, 0.5, 0.8, 1]) {
                 const a = source.getPointAtLength(length * f),
                   b = p.getPointAtLength(after * f);
-                near(b.x, a.x + component.dx, "Translated x");
-                near(b.y, a.y, "Preserved y");
+                near(b.x, a.x * component.scale + component.dx, "Translated x");
+                near(b.y, a.y * component.scale + component.dy, "Preserved y");
               }
               const box = p.getBBox();
               ensure(
@@ -242,6 +288,21 @@ for (const [name, checksum] of Object.entries(manifest.unchangedFiles)) {
                   box.y + box.height <= 380,
                 "No clipping " + c.name,
               );
+              if (key === "numbers") {
+                const cell = c.numberSquare,
+                  halfWidth = 4;
+                ensure(
+                  box.x - halfWidth > cell.x &&
+                    box.x + box.width + halfWidth < cell.x + cell.size &&
+                    box.y - halfWidth > cell.y &&
+                    box.y + box.height + halfWidth < cell.y + cell.size,
+                  "Whole number must fit in one square: " + c.name,
+                );
+                ensure(
+                  elements.notebookLayer.children.length === 4,
+                  "Only the four square edges; no rules through digits",
+                );
+              }
               ensure(state.strokeIndex === expectedStroke, "Engine order");
               if (state.phase === "preparing") {
                 ensure(
@@ -323,7 +384,10 @@ for (const [name, checksum] of Object.entries(manifest.unchangedFiles)) {
         });
       }
       // Changing speed, including while paused, must retain drawing progress.
-      Object.defineProperty(performance, "now", {value: () => 10000, configurable: true});
+      Object.defineProperty(performance, "now", {
+        value: () => 10000,
+        configurable: true,
+      });
       changeSet("uppercase");
       stopAnimation();
       state.phaseStartedAt = performance.now() - 500;
@@ -410,6 +474,8 @@ for (const [name, checksum] of Object.entries(manifest.unchangedFiles)) {
       ["kannadaVyanjanas", "ಕ"],
       ["kannadaVyanjanas", "ಞ"],
       ["kannadaVyanjanas", "ಳ"],
+      ["kannadaVyanjanas", "ಢ"],
+      ["kannadaVyanjanas", "ಧ"],
     ];
     for (const size of [
       { width: 360, height: 800 },
@@ -490,14 +556,12 @@ for (const [name, checksum] of Object.entries(manifest.unchangedFiles)) {
           fullPage: true,
         });
         if (size.width === 1024)
-          await page
-            .locator("#letterCanvas")
-            .screenshot({
-              path: path.join(
-                artifacts,
-                `sample-${String(nameId).padStart(2, "0")}.png`,
-              ),
-            });
+          await page.locator("#letterCanvas").screenshot({
+            path: path.join(
+              artifacts,
+              `sample-${String(nameId).padStart(2, "0")}.png`,
+            ),
+          });
       }
     }
     // History, malformed links and unavailable audio remain usable.
@@ -509,7 +573,9 @@ for (const [name, checksum] of Object.entries(manifest.unchangedFiles)) {
       () => document.querySelectorAll(".notebook-tile").length === 3,
     );
     await page.goto(base + "/#/lkg/maths/uppercase/200");
-    await page.getByRole("heading", { name: "LKG", exact: true }).waitFor();
+    await page
+      .getByRole("link", { name: "Open LKG notebook", exact: true })
+      .waitFor();
     assert.equal(new URL(page.url()).hash, "#/");
     // Every runtime asset is local and resolves under the deployment subpath.
     const assets = await page.evaluate(() =>

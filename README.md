@@ -28,18 +28,18 @@ Home → LKG → subject → exercise category:
 | Kannada | Swaras — ಸ್ವರಗಳು | 15 swaras and marks | Paired body guides |
 | Kannada | Vyanjanas — ವ್ಯಂಜನಗಳು | 34 consonants | Paired body guides |
 
-**187 exercises** share one demonstration engine. Each category has Previous/Next, a collapsible direct index, Play/Pause/Replay/Hear, and Slow/Normal/Fast speeds. Changing exercises starts the demonstration. Completion leaves the ink visible without advancing. Pause retains the current position; Hear repeats only the announcement.
+**187 exercises** share one demonstration engine. Each category has Previous/Next, a collapsible direct index, accessible Play/Pause/Replay/Hear icons, and Slow/Normal/Fast speeds. Changing exercises starts the demonstration. Completion leaves the ink visible without advancing. Pause retains the current position; Hear repeats only the announcement.
 
 Number-name exercises spell the word before saying it: “O, N, E. One.” This applies to One through Ten on selection, Play, Replay and Hear.
 
 ## Architecture and preserved behavior
 
 - `letters.js`: unchanged source English and original number paths; original library metadata.
-- `kannada.js`, `kannada-vyanjana.js`, `kannada-notebook.js`: unchanged researched Kannada paths and anatomical placement transforms.
+- `kannada.js`, `kannada-vyanjana.js`, `kannada-notebook.js`: researched Kannada paths and anatomical placement transforms. ಢ now uses the looped body and separate lower mark checked against the CIIL–NCERT primer; its provenance and anchors are updated. Other Kannada characters retain their source geometry.
 - `composition.js`: reusable SVG path transforms, measured path bounds and word/pair composition.
 - `curriculum.js`: all seven categories, complete number names, digit extraction, grade and subject definitions.
 - `app.js`: adapted original requestAnimationFrame state machine (`ready`, `drawing`, `preparing`, `paused`, `complete`). Guide, ink, start dot and moving pencil share the same path geometry. Stroke timing, easing, Kannada length-based linear movement, 800 ms holds and pen-lift sequences are retained.
-- `navigation.js`: hash routes, notebook shelf, breadcrumbs, Back/Home and direct exercise index. A route such as `#/lkg/english/combination/6` opens Gg. Exercise indices in routes are zero based.
+- `navigation.js`: hash routes, notebook shelf, a named parent link, Home and direct exercise index. A route such as `#/lkg/english/combination/6` opens Gg. Exercise indices in routes are zero based.
 - `speech.js`: unchanged shared browser speech helper with Indian English and Kannada voice preferences, female voice preference, rate 0.85, pitch 1, cancellation and language fallback. Announcements wait for a user gesture.
 - `styles.css`, `assets/`: shared ivory-paper and sage stationery design, bundled fonts and SVG doodles.
 - `review/`: retained original Kannada research, source images, construction records and interactive gallery.
@@ -49,9 +49,9 @@ Number-name exercises spell the word before saying it: “O, N, E. One.” This 
 
 English singles retain their original **400 × 400** geometry. Rules stay at **y = 70, 160, 250, 340**. Pairs and words compose those same path definitions using horizontal translation alone. The SVG grows wider with measured character widths and a consistent gap. Every original y coordinate, stroke order, descender and ascender is preserved. Each new character begins with a pen lift and repositioning cue. The complete word fits uniformly into narrower screens; individual letters are never compressed.
 
-Kannada retains the source **y = 145, 250** guides and the individual body anchors in `kannada-notebook.js`. Its original scale/translation, extension marks, pen widths and source arrays remain intact.
+Kannada retains the source **y = 145, 250** guides and the individual body anchors in `kannada-notebook.js`. Its per-character scale/translation, extension marks and pen widths are preserved. The corrected ಢ uses updated anchors for its looped body.
 
-Digits 1–9 come from the original number definitions; zero comes from the second stroke of the original 10. Each digit is uniformly normalized to actual bounds **y = 80..320**, preserving aspect ratio, shapes and stroke order. Multi-digit exercises place normalized digits in successive 240-unit slots, on an 80-unit square grid. The engine writes left to right and announces the whole number (for example, Twenty-seven).
+Digits 1–9 come from the original number definitions; zero comes from the second stroke of the original 10. Each digit is uniformly normalized to actual bounds **y = 80..320**, preserving aspect ratio, shapes and stroke order. All numbers, including 10–50, fit entirely within one large square (x/y = 40..360). A common uniform digit scale, measured widths and a clear gap preserve digit proportions and a shared baseline. There are no rules between or through the digits. The engine writes left to right and announces the whole number (for example, Twenty-seven).
 
 ### Extending content
 
@@ -92,3 +92,5 @@ The workflow `.github/workflows/pages.yml` runs all checks, packages only the st
 Actual voice availability, accent and audible pronunciation depend on the device. With no matching voice, the browser receives the requested language without an explicit English-only voice for Kannada; some devices may remain silent. Speech mocks verify requests, not audio quality. Touch layouts are checked in Chromium viewports; physical tablets and Safari require device testing. Words appear smaller on narrow phones because the complete wider page scales uniformly to fit. Kannada follows the documented source convention and is not independently teacher certified.
 
 [Attribution](ATTRIBUTION.md) · [License](LICENSE.md) · [Original module documentation](docs/ORIGINAL-README.md) · [Requested scope](docs/REQUEST.md)
+
+The home page removes decorative headings and explanatory copy while retaining the app identity, the “Made for little hands and big discoveries” phrase, and an illustrated LKG notebook tile with its functional title and action. [Number-square research and Kannada correction](review/NOTEBOOK-CORRECTIONS.md) documents the requested convention and source checks.

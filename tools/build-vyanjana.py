@@ -32,7 +32,7 @@ for c in construction:
     output.append({
         'name':c['name'], 'id':c['id'], 'strokes':strokes,
         'source':f"https://commons.wikimedia.org/wiki/File:Kannada-alphabet-{c['file']}.gif",
-        'referenceImage':f"vyanjana-references/{c['id']}.png",
+        'referenceImage':c.get('referenceImage',f"vyanjana-references/{c['id']}.png"),
         'reconstructionNote':c.get('junctionNote','Smooth monoline reconstruction; see construction notes for simplifications.'),
         'movementNote':'One continuous pen-down movement.' if len(strokes)==1 else 'Lift the pencil only between the numbered strokes.'
     })

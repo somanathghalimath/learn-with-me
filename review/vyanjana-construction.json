@@ -498,41 +498,42 @@
   {
     "name": "ಢ",
     "id": "ddha",
-    "file": "dhha",
+    "file": "dda",
     "strokes": [
       {
-        "d": "M 69 37 C 38 47 25 86 48 105 C 68 121 85 109 93 96 C 103 117 128 119 138 100 C 157 66 116 26 69 37 L 69 28",
-        "prompt": "Go down around both bowls, then curve left across the top to close the body.",
+        "d": "M 90 47 C 59 57 44 91 64 111 C 85 131 108 117 114 99 C 123 122 149 128 160 110 C 174 88 147 62 132 69 C 107 79 141 89 151 77 C 165 54 117 40 90 47 L 90 38",
+        "prompt": "Curve down through both bowls, loop left inside the right side, then curve across the top back to the start.",
         "sourceFrames": [
           0,
-          18
+          29
         ]
       },
       {
-        "d": "M 35 28 L 122 28 C 146 28 155 21 140 12",
+        "d": "M 54 38 L 141 38 C 164 38 175 22 154 12",
         "prompt": "Lift. Go right across the head stroke, then curl up.",
         "sourceFrames": [
-          19,
-          27
+          30,
+          38
         ]
       },
       {
-        "d": "M 93 123 L 93 145",
+        "d": "M 116 133 L 116 153",
         "prompt": "Lift. Draw the short lower mark downwards.",
         "sourceFrames": [
-          28,
-          29
+          39,
+          41
         ]
       }
     ],
     "sourceBounds": [
-      34,
+      53,
       11,
-      148,
-      152
+      168,
+      160
     ],
-    "sourceSHA256": "ed53bab281e8243aa72a1b40a9d780a497d018af6178ff98935e9ab35ad2e06c",
-    "junctionNote": "Extended the body centreline into the head/middle stroke within the broad source junction; no extra pen lift."
+    "sourceSHA256": "7e912862672c00f9e078f287b3d087d3f790b6be9395bb5a09eccb370abb9310",
+    "junctionNote": "Identity correction: use the looped body and separate lower mark visible in the source dda.gif, matching CIIL–NCERT Kannada Primer PDF page 47 (printed page 30). The old dhha.gif has no inner loop and was incorrectly mapped to this character. Original dhha reference retained for provenance.",
+    "referenceImage": "vyanjana-references/dda.png"
   },
   {
     "name": "ಣ",

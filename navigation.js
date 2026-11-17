@@ -50,36 +50,27 @@
     open.className = "tile-open";
     open.textContent = "Open notebook  ↗";
     a.append(binding, label, characters, name, sub, desc, open);
+    if (parts.length === 1) {
+      a.setAttribute("aria-label", "Open LKG notebook");
+      const illustration = document.createElement("img");
+      illustration.src = "assets/learning-doodle.svg";
+      illustration.alt = "";
+      illustration.className = "home-illustration";
+      a.append(illustration);
+    }
     return a;
   }
-  function renderBreadcrumbs() {
-    const crumbs = [{ title: "Home", parts: [] }];
-    if (route.length) crumbs.push({ title: "LKG", parts: ["lkg"] });
-    if (route[1])
-      crumbs.push({
-        title: CURRICULUM.subjects[route[1]].title,
-        parts: route.slice(0, 2),
-      });
-    if (route[2])
-      crumbs.push({
-        title: LETTER_LIBRARY[route[2]].label,
-        parts: route.slice(0, 3),
-      });
-    $("#breadcrumbs").replaceChildren(
-      ...crumbs.map((crumb, i) => {
-        const li = document.createElement("li"),
-          a = document.createElement("a");
-        a.href = href(crumb.parts);
-        a.textContent = crumb.title;
-        if (i === crumbs.length - 1) a.setAttribute("aria-current", "page");
-        li.append(a);
-        return li;
-      }),
-    );
-    $("#backLink").hidden = !route.length;
-    $("#backLink").href = href(
-      route.slice(0, route[2] ? 2 : Math.max(0, route.length - 1)),
-    );
+  function renderParentLink() {
+    const parent = route[2]
+      ? { title: CURRICULUM.subjects[route[1]].title, parts: route.slice(0, 2) }
+      : route[1]
+        ? { title: "LKG", parts: ["lkg"] }
+        : { title: "Home", parts: [] };
+    const link = $("#backLink");
+    link.hidden = !route.length;
+    link.href = href(parent.parts);
+    link.textContent = `← ${parent.title}`;
+    link.setAttribute("aria-label", `Back to ${parent.title}`);
   }
   function renderIndex() {
     const set = getActiveSet();
@@ -122,7 +113,6 @@
     $("#lessonPage").hidden = false;
     const set = LETTER_LIBRARY[key];
     $("#categoryTitle").textContent = set.label;
-    $("#subjectLabel").textContent = CURRICULUM.subjects[set.subject].title;
     state.activeSetKey = key;
     state.letterIndex = index;
     if (render) {
@@ -150,6 +140,7 @@
     pictureSpeech.cancel();
     hasAnnouncedLetter = false;
     document.body.classList.toggle("in-lesson", Boolean(route[2]));
+    document.body.classList.toggle("is-home", !route.length);
     if (route[2]) {
       showLesson(route[2], Number(route[3] || 0));
     } else {
@@ -193,7 +184,7 @@
         }
       }
     }
-    renderBreadcrumbs();
+    renderParentLink();
     document.title = route.length
       ? (route[2]
           ? LETTER_LIBRARY[route[2]].label
@@ -216,10 +207,11 @@
     route = ["lkg", set.subject, state.activeSetKey];
     history.replaceState(null, "", href(route));
     document.body.classList.add("in-lesson");
+    document.body.classList.remove("is-home");
     document.title = set.label + " · Learn With Me";
     routing = true;
     showLesson(state.activeSetKey, state.letterIndex, false);
-    renderBreadcrumbs();
+    renderParentLink();
     routing = false;
     syncExercise();
   });

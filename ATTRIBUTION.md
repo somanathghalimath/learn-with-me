@@ -2,7 +2,7 @@
 
 Learn With Me adapts **Write With Me** from [AGS Learning Companion](https://github.com/somanathghalimath/ags-learning-companion), by Somanath Ghalimath. The source checkout was read only; its commit and the checksums of the retained path and speech files are recorded in [the source manifest](docs/source-manifest.json).
 
-The 52 English path definitions, 15 original Kannada swara/mark definitions, 34 original consonant definitions, per-character Kannada notebook placements, and shared speech helper were copied without changes. The animation engine and regression tools were adapted. New composition, navigation, ruling and presentation code were added. Digit shapes reuse the original 1–9 and the zero from the original 10, with documented uniform scaling and translation.
+The 52 English path definitions, 15 Kannada swara/mark definitions and shared speech helper remain unchanged. The Kannada consonant library and notebook placement were initially copied intact; the ಢ body and its placement have since been corrected against the CIIL–NCERT primer. See [correction evidence](review/NOTEBOOK-CORRECTIONS.md). The animation engine and regression tools were adapted. New composition, navigation, ruling and presentation code were added. Digit shapes reuse the original 1–9 and the zero from the original 10, with documented uniform scaling and translation.
 
 ## Kannada material — CC BY-SA 4.0
 

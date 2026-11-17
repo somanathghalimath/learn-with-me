@@ -38,7 +38,7 @@ window.KANNADA_NOTEBOOK = (() => {
     "ಟ": {"bodyTop": 77.5, "bodyBottom": 308.221, "page": 16, "row": "upper", "note": "The main curves define the body band; their original proportions are preserved."},
     "ಠ": {"bodyTop": 135.122, "bodyBottom": 319.115, "page": 16, "row": "lower", "note": "Head stroke at the upper body guide; lower body at the baseline."},
     "ಡ": {"bodyTop": 110.738, "bodyBottom": 266.32, "page": 17, "row": "upper", "note": "Head stroke at the upper body guide; lower body at the baseline. The separate lower mark extends below the baseline."},
-    "ಢ": {"bodyTop": 93.759, "bodyBottom": 262.721, "page": 17, "row": "lower", "note": "Head stroke at the upper body guide; lower body at the baseline. The separate lower mark extends below the baseline."},
+    "ಢ": {"bodyTop": 110.738, "bodyBottom": 266.32, "page": 17, "row": "lower", "note": "Head stroke at the upper body guide; lower body at the baseline. The separate lower mark extends below the baseline."},
     "ಣ": {"bodyTop": 105.92, "bodyBottom": 294.442, "page": 23, "row": "upper", "note": "The main curves define the body band; their original proportions are preserved."},
     "ತ": {"bodyTop": 135.122, "bodyBottom": 326.593, "page": 18, "row": "upper", "note": "Head stroke at the upper body guide; lower body at the baseline."},
     "ಥ": {"bodyTop": 95.493, "bodyBottom": 263.789, "page": 18, "row": "lower", "note": "Head stroke at the upper body guide; lower body at the baseline. The separate lower mark extends below the baseline."},

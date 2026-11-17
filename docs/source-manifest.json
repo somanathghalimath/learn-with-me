@@ -4,8 +4,6 @@
   "unchangedFiles": {
     "letters.js": "4f9c1166c5b1a2c896ceaa92e55b1476c36f5cdf094053891727f65b28f66b54",
     "kannada.js": "68f5edd059d8ad4a8f0f38732ccecea7da842d54d25b4545b96d2bc47ba4a64b",
-    "kannada-vyanjana.js": "10412f67d868d909662e0d2bb980d2b197b88d41fd7eeba6569547a57dbaebab",
-    "kannada-notebook.js": "55ff98bbdfaec8bff78ea03ce82978e83cedb70cffd1deaafa2173041c4d39d0",
     "speech.js": "67f1809972493abae9cf3f9363f48ba7c6baa62c5c763fbfdc3ffae2d75c1e80"
   },
   "sourcePaths": {
@@ -14,5 +12,17 @@
     "kannada-vyanjana.js": "alphabet-writing-guide/kannada-vyanjana.js",
     "kannada-notebook.js": "alphabet-writing-guide/kannada-notebook.js",
     "speech.js": "picture-reading/speech.js"
+  },
+  "adaptedFiles": {
+    "kannada-vyanjana.js": {
+      "originalSHA256": "10412f67d868d909662e0d2bb980d2b197b88d41fd7eeba6569547a57dbaebab",
+      "currentSHA256": "3bacfbd8850bb826c3200b20dd7e23f04f9e8809c1e03e25a190ca12e0af31b9",
+      "changes": "Corrected ಢ to the looped body with lower mark; retained the other characters."
+    },
+    "kannada-notebook.js": {
+      "originalSHA256": "55ff98bbdfaec8bff78ea03ce82978e83cedb70cffd1deaafa2173041c4d39d0",
+      "currentSHA256": "93d71d77b657c3b0c0d26e10db97225d104546de6836b5a5429bb58c59603bf6",
+      "changes": "Corrected ಢ to the looped body with lower mark; retained the other characters."
+    }
   }
 }

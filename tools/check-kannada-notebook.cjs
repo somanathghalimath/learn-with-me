@@ -45,6 +45,12 @@ const assert=require('node:assert/strict');
      }
      // Anatomical checks against actual components, rather than overall glyph bounds.
      const paths=state.strokeElements;
+     if(c.name==='ಢ'){
+      if(!original.strokes[0].prompt.includes('loop left inside')||(original.strokes[0].d.match(/C /g)||[]).length<6)throw Error('DDHA must retain its inner right loop');
+      if(paths.length!==3||bounds(paths[2]).y<=250)throw Error('DDHA needs its separate lower mark');
+      const dental=KANNADA_VYANJANAS.find(c=>c.name==='ಧ');
+      if(original.strokes[0].d===dental.strokes[0].d)throw Error('Retroflex DDHA must not use dental DHA geometry');
+     }
      if(c.name==='ಗ'){
       near(paths[1].getPointAtLength(0).y,145,'ga head bar');near(bounds(paths[0]).y+bounds(paths[0]).height,250,'ga stem base');
       if(bounds(paths[1]).y>=145)throw Error('Ga crest should rise above the guide');
@@ -76,7 +82,7 @@ const assert=require('node:assert/strict');
    }
    await page.screenshot({path:`/tmp/kannada-lines-${width}.png`,fullPage:true});
   }
-  for(const [set,n] of [['uppercase',4],['numbers',12],['kannadaSwaras',2],['lowercase',4],['kannadaVyanjanas',2]]){
+  for(const [set,n] of [['uppercase',4],['numbers',4],['kannadaSwaras',2],['lowercase',4],['kannadaVyanjanas',2]]){
    await page.evaluate(key=>changeSet(key),set);assert.equal(await page.locator('#notebookLayer line').count(),n);
   }
   await page.goto(base+'/review/kannada-review.html');

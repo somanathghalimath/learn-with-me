@@ -68,36 +68,54 @@ window.CURRICULUM = (() => {
       ];
     }),
   );
+  // One complete number per large teaching square, including 10–50.
+  // Use a common uniform digit scale across the category; no horizontal squeeze.
+  const numberSquare = { x: 40, y: 40, size: 320 };
+  const digitBoxes = Object.fromEntries(
+    Object.entries(digits).map(([name, c]) => [name, HANDWRITING.bounds(c)]),
+  );
+  const gap = 24;
+  const widestDigit = Math.max(
+    ...Object.values(digitBoxes).map((b) => b.width),
+  );
+  const numberScale = Math.min(1, 272 / (widestDigit * 2 + gap));
   const numbers = Array.from({ length: 50 }, (_, i) => {
     const name = String(i + 1),
       strokes = [],
       components = [];
+    const width =
+      [...name].reduce((sum, digit) => sum + digitBoxes[digit].width, 0) +
+      (name.length - 1) * gap;
+    let cursor = 200 - (width * numberScale) / 2;
+    const dy = 200 * (1 - numberScale);
     [...name].forEach((digit, index) => {
       const c = digits[digit],
-        dx = index * 240;
+        dx = cursor - digitBoxes[digit].left * numberScale;
       components.push({
         name: digit,
         dx,
-        dy: 0,
-        scale: 1,
+        dy,
+        scale: numberScale,
         firstStroke: strokes.length,
         strokeCount: c.strokes.length,
       });
       c.strokes.forEach((s, j) =>
         strokes.push({
-          ...HANDWRITING.transform(s, 1, dx),
+          ...HANDWRITING.transform(s, numberScale, dx, dy),
           characterIndex: index,
           characterName: digit,
           beginsCharacter: j === 0,
         }),
       );
+      cursor += (digitBoxes[digit].width + gap) * numberScale;
     });
     return {
       name,
       announcement: numberName(i + 1),
       strokes,
       components,
-      viewportWidth: name.length === 1 ? 400 : 640,
+      viewportWidth: 400,
+      numberSquare,
     };
   });
   Object.assign(library.uppercase, {

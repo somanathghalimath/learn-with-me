@@ -76,7 +76,7 @@ Coordinates below refer to the unchanged source vectors. Page numbers are one-ba
 | ಟ | 77.5 | 308.221 | PDF 16, upper | The main curves define the body band; their original proportions are preserved. |
 | ಠ | 135.122 | 319.115 | PDF 16, lower | Head stroke at the upper body guide; lower body at the baseline. |
 | ಡ | 110.738 | 266.32 | PDF 17, upper | Head stroke at the upper body guide; lower body at the baseline. The separate lower mark extends below the baseline. |
-| ಢ | 93.759 | 262.721 | PDF 17, lower | Head stroke at the upper body guide; lower body at the baseline. The separate lower mark extends below the baseline. |
+| ಢ | 110.738 | 266.32 | PDF 17, lower | Head stroke at the upper body guide; lower body at the baseline. The separate lower mark extends below the baseline. |
 | ಣ | 105.92 | 294.442 | PDF 23, upper | The main curves define the body band; their original proportions are preserved. |
 | ತ | 135.122 | 326.593 | PDF 18, upper | Head stroke at the upper body guide; lower body at the baseline. |
 | ಥ | 95.493 | 263.789 | PDF 18, lower | Head stroke at the upper body guide; lower body at the baseline. The separate lower mark extends below the baseline. |
@@ -111,3 +111,5 @@ The changed artboard-fit check allows the complete 400-unit review frame with ex
 The positioned Kannada vectors are uniformly transformed copies of the existing adaptations of **Gopala Krishna A’s Wikimedia Commons handwriting animations**, licensed [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). The adapted path contributions and derivative review diagrams retain that license and their existing per-character source links. Changes in this revision are only placement, uniform scaling, proportional pen width and added guide lines/reference annotations.
 
 Janapriya’s copybook and other educational PDFs were consulted for placement comparison. Their page images, printed glyph outlines and instructional text are not included in the application. No publisher, author, school or institution endorses this implementation.
+
+17 November 2026 correction: ಢ now uses the looped body from the retained `dda.gif` movement reference and matching updated body anchors. See [identity correction evidence](NOTEBOOK-CORRECTIONS.md).
