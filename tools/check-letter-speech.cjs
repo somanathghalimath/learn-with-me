@@ -18,12 +18,13 @@ const assert=require('node:assert/strict');
   await page.locator('#letterCanvas').click({position:{x:100,y:100}});
   assert.deepEqual(await page.evaluate(()=>speechCalls.at(-1)),{text:'Capital A',lang:'en-IN',voice:'Microsoft Heera',rate:.85,pitch:1});
   let count=0;
+  const numeralAnnouncements=['O, N, E. One.','T, W, O. Two.','T, H, R, E, E. Three.','F, O, U, R. Four.','F, I, V, E. Five.','S, I, X. Six.','S, E, V, E, N. Seven.','E, I, G, H, T. Eight.','N, I, N, E. Nine.','T, E, N. Ten.'];
   for(const set of ['uppercase','lowercase','combination','numbers','numerals','kannadaSwaras','kannadaVyanjanas']){
    await page.evaluate(key=>changeSet(key),set);
    const names=await page.evaluate(()=>getCharacters().map(c=>c.name));
    for(let i=0;i<names.length;i++){
     if(i)await page.locator('#nextButton').click();
-    const expectedText=set==='uppercase'?'Capital '+names[i]:set==='lowercase'?'Small '+names[i].toUpperCase():set==='numbers'?await page.evaluate(n=>CURRICULUM.numberName(n),i+1):set==='combination'?'Capital '+names[i][0]+', small '+names[i][0]:names[i];
+    const expectedText=set==='uppercase'?'Capital '+names[i]:set==='lowercase'?'Small '+names[i].toUpperCase():set==='numbers'?await page.evaluate(n=>CURRICULUM.numberName(n),i+1):set==='combination'?'Capital '+names[i][0]+', small '+names[i][0]:set==='numerals'?numeralAnnouncements[i]:names[i];
     const last=await page.evaluate(()=>speechCalls.at(-1));
     assert.equal(last.text,expectedText);assert.equal(last.rate,.85);assert.equal(last.pitch,1);
     assert.equal(last.lang,set.startsWith('kannada')?'kn-IN':'en-IN');
@@ -38,10 +39,12 @@ const assert=require('node:assert/strict');
    assert.equal(await page.evaluate(()=>state.letterIndex),names.length-2);
    await page.locator('#replayButton').click();
    assert.equal(await page.evaluate(()=>state.strokeIndex),0);
+   if(set==='numerals')assert.equal(await page.evaluate(()=>speechCalls.at(-1).text),numeralAnnouncements[names.length-2]);
    await page.locator('#pauseButton').click();
    assert.equal(await page.evaluate(()=>speechCalls.at(-1).cancel),true);
    await page.locator('#playButton').click();
    assert.equal(await page.evaluate(()=>speechCalls.at(-1).lang),set.startsWith('kannada')?'kn-IN':'en-IN');
+   if(set==='numerals')assert.equal(await page.evaluate(()=>speechCalls.at(-1).text),numeralAnnouncements[names.length-2]);
   }
   assert.equal(count,187);
   // Without a listed Kannada voice, do not force the English voice onto Kannada.

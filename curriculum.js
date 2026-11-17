@@ -134,7 +134,10 @@ window.CURRICULUM = (() => {
     itemLabel: "Word",
     subject: "maths",
     notebookGuides: true,
-    characters: words.map((word) => HANDWRITING.compose(word, lookup)),
+    characters: words.map((word) => ({
+      ...HANDWRITING.compose(word, lookup),
+      announcement: `${[...word.toUpperCase()].join(", ")}. ${word}.`,
+    })),
   };
   Object.assign(library.kannadaSwaras, {
     label: "Swaras",

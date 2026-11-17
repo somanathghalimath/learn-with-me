@@ -30,6 +30,8 @@ Home → LKG → subject → exercise category:
 
 **187 exercises** share one demonstration engine. Each category has Previous/Next, a collapsible direct index, Play/Pause/Replay/Hear, and Slow/Normal/Fast speeds. Changing exercises starts the demonstration. Completion leaves the ink visible without advancing. Pause retains the current position; Hear repeats only the announcement.
 
+Number-name exercises spell the word before saying it: “O, N, E. One.” This applies to One through Ten on selection, Play, Replay and Hear.
+
 ## Architecture and preserved behavior
 
 - `letters.js`: unchanged source English and original number paths; original library metadata.
