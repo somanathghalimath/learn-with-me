@@ -1015,4 +1015,41 @@ footer {
   }
 }
 
-.intro-doodle{width:90px;top:8px;right:10px;}
+.intro-doodle {
+  width: 90px;
+  top: 8px;
+  right: 10px;
+}
+
+/* Retained by request on every page, including narrow phones. */
+.header-note {
+  display: block;
+  margin-left: auto;
+  text-align: right;
+  font: clamp(17px, 2vw, 23px) var(--hand);
+}
+.app-header .home-button {
+  margin-left: 0;
+}
+@media (max-width: 650px) {
+  .app-header,
+  .in-lesson .app-header,
+  .is-home .app-header {
+    height: auto;
+    min-height: 100px;
+    padding: 12px 0;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .header-note,
+  .is-home .header-note {
+    order: 3;
+    width: 100%;
+    margin: 0;
+    text-align: center;
+    font-size: 18px;
+  }
+  .app-header .home-button {
+    margin-left: auto;
+  }
+}

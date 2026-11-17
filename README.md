@@ -24,13 +24,13 @@ Home → LKG → subject → exercise category:
 | English | Small Letters | a–z (26) | Red–blue–blue–red |
 | English | Combination | Aa–Zz (26) | Red–blue–blue–red |
 | Maths | Numbers (1–50) | 1–50 (50) | Square grid |
-| Maths | Numerals (One–Ten) | One–Ten (10) | Red–blue–blue–red |
+| Maths | Numerals (ONE–TEN) | ONE–TEN (10) | Red–blue–blue–red |
 | Kannada | Swaras — ಸ್ವರಗಳು | 15 swaras and marks | Paired body guides |
 | Kannada | Vyanjanas — ವ್ಯಂಜನಗಳು | 34 consonants | Paired body guides |
 
 **187 exercises** share one demonstration engine. Each category has Previous/Next, a collapsible direct index, accessible Play/Pause/Replay/Hear icons, and Slow/Normal/Fast speeds. Changing exercises starts the demonstration. Completion leaves the ink visible without advancing. Pause retains the current position; Hear repeats only the announcement.
 
-Number-name exercises spell the word before saying it: “O, N, E. One.” This applies to One through Ten on selection, Play, Replay and Hear.
+Number-name exercises use capital letters, ONE through TEN. Audio spells first, waits 400 ms after spelling finishes, then says the whole word: “O, N, E … ONE.” Selection, Play, Replay and Hear use the same sequence; Pause and navigation cancel either speech stage and any pending pause.
 
 ## Architecture and preserved behavior
 
@@ -40,7 +40,7 @@ Number-name exercises spell the word before saying it: “O, N, E. One.” This 
 - `curriculum.js`: all seven categories, complete number names, digit extraction, grade and subject definitions.
 - `app.js`: adapted original requestAnimationFrame state machine (`ready`, `drawing`, `preparing`, `paused`, `complete`). Guide, ink, start dot and moving pencil share the same path geometry. Stroke timing, easing, Kannada length-based linear movement, 800 ms holds and pen-lift sequences are retained.
 - `navigation.js`: hash routes, notebook shelf, a named parent link, Home and direct exercise index. A route such as `#/lkg/english/combination/6` opens Gg. Exercise indices in routes are zero based.
-- `speech.js`: unchanged shared browser speech helper with Indian English and Kannada voice preferences, female voice preference, rate 0.85, pitch 1, cancellation and language fallback. Announcements wait for a user gesture.
+- `speech.js`: adapted shared browser speech helper with Indian English and Kannada voice preferences, female voice preference, rate 0.85, pitch 1, cancellation and language fallback. Announcements wait for a user gesture; numeral words use a cancellable two-stage spelling/word announcement with a 400 ms pause.
 - `styles.css`, `assets/`: shared ivory-paper and sage stationery design, bundled fonts and SVG doodles.
 - `review/`: retained original Kannada research, source images, construction records and interactive gallery.
 - `tools/`: adapted original regression checks and additional curriculum/browser checks. Python source reconstruction utilities are retained as historical research tools, not runtime dependencies. `refine-kannada.py` requires the original repository history and optional scientific packages; the application and regression suite do not run it.
@@ -93,4 +93,4 @@ Actual voice availability, accent and audible pronunciation depend on the device
 
 [Attribution](ATTRIBUTION.md) · [License](LICENSE.md) · [Original module documentation](docs/ORIGINAL-README.md) · [Requested scope](docs/REQUEST.md)
 
-All pages use functional names and controls: LKG/subject/category titles, notebook labels, exercise counts, movement cues, speed and index controls, and Credits. Decorative slogans, taglines, stationery labels and explanatory filler have been removed. [Number-square research and Kannada correction](review/NOTEBOOK-CORRECTIONS.md) documents the requested convention and source checks.
+All pages use functional names and controls: LKG/subject/category titles, notebook labels, exercise counts, movement cues, speed and index controls, and Credits. The requested “Made for little hands and big discoveries” phrase remains visible on every page. Other decorative slogans, stationery labels and explanatory filler have been removed. [Number-square research and Kannada correction](review/NOTEBOOK-CORRECTIONS.md) documents the requested convention and source checks.

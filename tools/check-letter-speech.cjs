@@ -8,9 +8,9 @@ const assert=require('node:assert/strict');
   const page=await browser.newPage({viewport:{width:360,height:800}});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.addInitScript(()=>{
-   window.speechCalls=[];
+   window.speechCalls=[];window.spokenUtterances=[];
    window.testVoices=[{name:'Microsoft Ravi',lang:'en-IN'},{name:'Microsoft Heera',lang:'en-IN'},{name:'Microsoft Gagan',lang:'kn-IN'},{name:'Microsoft Sapna',lang:'kn-IN'}];
-   Object.defineProperty(window,'speechSynthesis',{value:{getVoices:()=>window.testVoices,cancel:()=>window.speechCalls.push({cancel:true}),speak:u=>window.speechCalls.push({text:u.text,lang:u.lang,voice:u.voice?.name,rate:u.rate,pitch:u.pitch})}});
+   Object.defineProperty(window,'speechSynthesis',{value:{getVoices:()=>window.testVoices,cancel:()=>window.speechCalls.push({cancel:true}),speak:u=>{window.spokenUtterances.push(u);window.speechCalls.push({text:u.text,lang:u.lang,voice:u.voice?.name,rate:u.rate,pitch:u.pitch});}}});
    window.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};
   });
   await page.goto(base+'/#/lkg/english/uppercase');
@@ -18,7 +18,7 @@ const assert=require('node:assert/strict');
   await page.locator('#letterCanvas').click({position:{x:100,y:100}});
   assert.deepEqual(await page.evaluate(()=>speechCalls.at(-1)),{text:'Capital A',lang:'en-IN',voice:'Microsoft Heera',rate:.85,pitch:1});
   let count=0;
-  const numeralAnnouncements=['O, N, E. One.','T, W, O. Two.','T, H, R, E, E. Three.','F, O, U, R. Four.','F, I, V, E. Five.','S, I, X. Six.','S, E, V, E, N. Seven.','E, I, G, H, T. Eight.','N, I, N, E. Nine.','T, E, N. Ten.'];
+  const numeralAnnouncements=['O, N, E','T, W, O','T, H, R, E, E','F, O, U, R','F, I, V, E','S, I, X','S, E, V, E, N','E, I, G, H, T','N, I, N, E','T, E, N'];
   for(const set of ['uppercase','lowercase','combination','numbers','numerals','kannadaSwaras','kannadaVyanjanas']){
    await page.evaluate(key=>changeSet(key),set);
    const names=await page.evaluate(()=>getCharacters().map(c=>c.name));
@@ -47,6 +47,37 @@ const assert=require('node:assert/strict');
    if(set==='numerals')assert.equal(await page.evaluate(()=>speechCalls.at(-1).text),numeralAnnouncements[names.length-2]);
   }
   assert.equal(count,187);
+  // The brief silence starts after spelling finishes, rather than relying on punctuation.
+  await page.clock.install();
+  await page.clock.pauseAt(new Date(Date.now()+1000));
+  await page.evaluate(()=>changeSet('numerals'));
+  const expectedWords=['ONE','TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE','TEN'];
+  for(let i=0;i<expectedWords.length;i++){
+   if(i)await page.locator('#nextButton').click();
+   assert.equal(await page.evaluate(()=>getCharacters()[state.letterIndex].name),expectedWords[i]);
+   assert.equal(await page.evaluate(()=>speechCalls.at(-1).text),numeralAnnouncements[i]);
+   await page.evaluate(()=>spokenUtterances.at(-1).onend());
+   await page.clock.runFor(399);
+   assert.equal(await page.evaluate(()=>speechCalls.at(-1).text),numeralAnnouncements[i]);
+   await page.clock.runFor(1);
+   assert.equal(await page.evaluate(()=>speechCalls.at(-1).text),expectedWords[i]);
+   assert.equal(await page.evaluate(()=>speechCalls.at(-1).voice),'Microsoft Heera');
+  }
+  // Pause cancels the pending word, and replacing an announcement invalidates old end events.
+  await page.locator('#hearButton').click();
+  await page.evaluate(()=>spokenUtterances.at(-1).onend());
+  await page.locator('#pauseButton').click();
+  const cancelledCount=await page.evaluate(()=>speechCalls.length);
+  await page.clock.runFor(600);
+  assert.equal(await page.evaluate(()=>speechCalls.length),cancelledCount);
+  await page.locator('#hearButton').click();
+  await page.evaluate(()=>{window.previousSpelling=spokenUtterances.at(-1);});
+  await page.locator('#previousButton').click();
+  const replacedCount=await page.evaluate(()=>speechCalls.length);
+  await page.evaluate(()=>previousSpelling.onend());
+  await page.clock.runFor(600);
+  assert.equal(await page.evaluate(()=>speechCalls.length),replacedCount);
+  await page.evaluate(()=>changeSet('kannadaVyanjanas'));
   // Without a listed Kannada voice, do not force the English voice onto Kannada.
   await page.evaluate(()=>{window.testVoices=[{name:'Microsoft Heera',lang:'en-IN'}];});
   await page.locator('#hearButton').click();
@@ -68,6 +99,6 @@ const assert=require('node:assert/strict');
    assert.ok((await unsupported.locator('#letter-heading').textContent()).includes(second));
   }
   assert.deepEqual(errors,[]);
-  console.log('PASS: all 187 exercises in seven categories; shared female en-IN preference; female kn-IN preference; Kannada fallback; Hear, first gesture, Next/Previous, replay, pause/resume, cancellation, mobile layout and unsupported browsers. Speech mocked; audible pronunciation not verified.');
+  console.log('PASS: all 187 exercises in seven categories; shared female en-IN preference; female kn-IN preference; Kannada fallback; Hear, first gesture, Next/Previous, replay, pause/resume, cancellation, all ten uppercase words with an explicit 400ms post-spelling pause, mobile layout and unsupported browsers. Speech mocked; audible pronunciation not verified.');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1)});

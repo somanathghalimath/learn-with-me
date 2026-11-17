@@ -147,15 +147,19 @@ window.CURRICULUM = (() => {
     characters: numbers,
   });
   library.numerals = {
-    label: "Numerals (One–Ten)",
+    label: "Numerals (ONE–TEN)",
     headingLabel: "Word",
     itemLabel: "Word",
     subject: "maths",
     notebookGuides: true,
-    characters: words.map((word) => ({
-      ...HANDWRITING.compose(word, lookup),
-      announcement: `${[...word.toUpperCase()].join(", ")}. ${word}.`,
-    })),
+    characters: words.map((word) => {
+      const name = word.toUpperCase();
+      return {
+        ...HANDWRITING.compose(name, lookup),
+        announcement: [...name].join(", "),
+        speechOptions: { followUp: name, pauseMs: 400 },
+      };
+    }),
   };
   Object.assign(library.kannadaSwaras, {
     label: "Swaras",

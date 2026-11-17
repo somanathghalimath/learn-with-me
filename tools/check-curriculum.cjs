@@ -50,7 +50,7 @@ for (const [name, entry] of Object.entries(manifest.adaptedFiles || {})) {
     assert.equal(
       await page
         .locator(
-          ".header-note,.brand small,.eyebrow,#pageDescription,.workbook-note,.lesson-note,.tile-label,.footer-flower",
+          ".brand small,.eyebrow,#pageDescription,.workbook-note,.lesson-note,.tile-label,.footer-flower",
         )
         .count(),
       0,
@@ -58,6 +58,10 @@ for (const [name, entry] of Object.entries(manifest.adaptedFiles || {})) {
     assert.equal(
       (await page.locator("footer").textContent()).trim(),
       "Credits",
+    );
+    assert.equal(
+      (await page.locator(".header-note").innerText()).trim(),
+      "Made for little hands and big discoveries",
     );
     // Complete hierarchy through actual links, including Back and Home.
     assert.equal(await page.locator(".notebook-tile").count(), 1);
@@ -80,7 +84,7 @@ for (const [name, entry] of Object.entries(manifest.adaptedFiles || {})) {
     covers.forEach((c) => assert.deepEqual(c, covers[0]));
     for (const [subject, labels] of [
       ["english", ["Capital Letters", "Small Letters", "Combination"]],
-      ["maths", ["Numbers (1–50)", "Numerals (One–Ten)"]],
+      ["maths", ["Numbers (1–50)", "Numerals (ONE–TEN)"]],
       ["kannada", ["Swaras", "Vyanjanas"]],
     ]) {
       await page.locator(`a[href="#/lkg/${subject}"]`).click();
@@ -95,6 +99,7 @@ for (const [name, entry] of Object.entries(manifest.adaptedFiles || {})) {
       for (let i = 0; i < labels.length; i++) {
         await page.locator(".notebook-tile").nth(i).click();
         await page.locator("#lessonPage").waitFor();
+        assert.equal(await page.locator(".header-note").isVisible(), true);
         assert.equal(
           await page.locator("#categoryTitle").textContent(),
           labels[i],
@@ -163,7 +168,7 @@ for (const [name, entry] of Object.entries(manifest.adaptedFiles || {})) {
       );
       ensure(
         LETTER_LIBRARY.numerals.characters.map((c) => c.name).join(",") ===
-          "One,Two,Three,Four,Five,Six,Seven,Eight,Nine,Ten",
+          "ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE,TEN",
         "Word coverage",
       );
       const numberWords = [
@@ -471,10 +476,10 @@ for (const [name, entry] of Object.entries(manifest.adaptedFiles || {})) {
       ["numbers", "10"],
       ["numbers", "27"],
       ["numbers", "50"],
-      ["numerals", "One"],
-      ["numerals", "Three"],
-      ["numerals", "Seven"],
-      ["numerals", "Eight"],
+      ["numerals", "ONE"],
+      ["numerals", "THREE"],
+      ["numerals", "SEVEN"],
+      ["numerals", "EIGHT"],
       ["kannadaSwaras", "ಅ"],
       ["kannadaSwaras", "ಈ"],
       ["kannadaSwaras", "ಔ"],

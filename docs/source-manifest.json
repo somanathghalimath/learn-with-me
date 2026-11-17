@@ -3,8 +3,7 @@
   "commit": "ea08c7842fbc942a8ad701de83c0dc4cd5a9e94c",
   "unchangedFiles": {
     "letters.js": "4f9c1166c5b1a2c896ceaa92e55b1476c36f5cdf094053891727f65b28f66b54",
-    "kannada.js": "68f5edd059d8ad4a8f0f38732ccecea7da842d54d25b4545b96d2bc47ba4a64b",
-    "speech.js": "67f1809972493abae9cf3f9363f48ba7c6baa62c5c763fbfdc3ffae2d75c1e80"
+    "kannada.js": "68f5edd059d8ad4a8f0f38732ccecea7da842d54d25b4545b96d2bc47ba4a64b"
   },
   "sourcePaths": {
     "letters.js": "alphabet-writing-guide/letters.js",
@@ -23,6 +22,11 @@
       "originalSHA256": "55ff98bbdfaec8bff78ea03ce82978e83cedb70cffd1deaafa2173041c4d39d0",
       "currentSHA256": "93d71d77b657c3b0c0d26e10db97225d104546de6836b5a5429bb58c59603bf6",
       "changes": "Corrected ಢ to the looped body with lower mark; retained the other characters."
+    },
+    "speech.js": {
+      "originalSHA256": "67f1809972493abae9cf3f9363f48ba7c6baa62c5c763fbfdc3ffae2d75c1e80",
+      "currentSHA256": "4f164ba889becb8a890de833a63f95dc3e173b17e0e2216f8b49b231f5cffb20",
+      "changes": "Optional spoken follow-up after a cancellable pause; existing language, voice, rate and pitch preserved."
     }
   }
 }

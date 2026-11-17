@@ -3,11 +3,16 @@ const pictureSpeech = (() => {
   'use strict';
   const supported = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
   let currentUtterance;
+  let followUpTimer = null;
+  let requestVersion = 0;
   function cancel() {
+    requestVersion += 1;
+    clearTimeout(followUpTimer);
+    followUpTimer = null;
     if (supported) window.speechSynthesis.cancel();
     currentUtterance = null;
   }
-  function speak(text, { lang = 'en-IN' } = {}) {
+  function speak(text, { lang = 'en-IN', followUp, pauseMs = 400 } = {}) {
     if (!supported || !text) return;
     cancel();
     // Read the current list each time: some browsers load voices asynchronously.
@@ -32,6 +37,16 @@ const pictureSpeech = (() => {
     currentUtterance.rate = 0.85;
     currentUtterance.pitch = 1;
     if (voice) currentUtterance.voice = voice;
+    if (followUp) {
+      const version = requestVersion;
+      currentUtterance.onend = () => {
+        if (version !== requestVersion) return;
+        followUpTimer = setTimeout(() => {
+          followUpTimer = null;
+          if (version === requestVersion) speak(followUp, {lang});
+        }, pauseMs);
+      };
+    }
     window.speechSynthesis.speak(currentUtterance);
   }
   window.addEventListener('pagehide', cancel);

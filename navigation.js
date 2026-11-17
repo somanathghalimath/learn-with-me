@@ -8,7 +8,7 @@
     lowercase: "abc",
     combination: "Aa",
     numbers: "1 2 3",
-    numerals: "One",
+    numerals: "ONE",
     kannadaSwaras: "ಅ ಆ ಇ",
     kannadaVyanjanas: "ಕ ಖ ಗ",
   };

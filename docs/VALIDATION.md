@@ -6,11 +6,11 @@ Validation uses real SVG geometry in headless Google Chrome, not font metrics or
 
 | Check | Coverage |
 | --- | --- |
-| Retained-source checksums | The 3 unchanged files and 2 documented Kannada derivatives match `source-manifest.json` |
+| Retained-source checksums | The 2 unchanged files and 3 documented derivatives match `source-manifest.json` |
 | English notebook | All 52 letters; actual cap/body/descender bounds; exact y=70/160/250/340 rules and colours; pencil/guide correspondence; ordered solid completion |
 | Kannada animation | All 49 characters × 3 speeds = 147 demonstrations; 800 ms holds; linear distance motion; explicit lifts; source stroke sequences; pause/resume/replay |
 | Kannada notebook | All 49 anatomical placements; uniform transformations and pen widths; body guides and extensions; no clipping; review/lesson parity |
-| Speech | All 187 exercises; complete numbers and words; female en-IN/kn-IN preference; language fallback; cancellation; Hear; Play/Replay; first gesture; unsupported browsers |
+| Speech | All 187 exercises; complete numbers and words; all ten uppercase words with a 400 ms pause after spelling; cancellation during the pause; female en-IN/kn-IN preference; language fallback; cancellation; Hear; Play/Replay; first gesture; unsupported browsers |
 | Composition | All 26 pairs + 50 numbers + 10 words = 86 exercises; component ordering, exact source-curve correspondence, unchanged English y coordinates, uniform digit normalization, bounds, lifts and pencil repositioning |
 | Navigation | Home → LKG → each subject → all 7 categories; named parent links/Home; accessible icon-only controls; history; malformed route fallback; direct exercise routes and index |
 | Playback | Previous/Next boundaries; automatic demonstration on selection; no automatic progression; pause retaining ink and pencil; restart and replay; speed changes preserving fractional progress |
@@ -25,7 +25,7 @@ Full-page screenshots cover **360 × 800**, **768 × 1024**, **1024 × 768**, an
 - A, Q; a, b, g, y.
 - Aa, Gg, Qq.
 - 1, 10, 27, 50.
-- One, Three, Seven, Eight.
+- ONE, THREE, SEVEN, EIGHT.
 - Kannada ಅ, ಈ, ಔ; ಕ, ಞ, ಳ, ಢ, ಧ.
 
 The suite checks undistorted SVG aspect ratios and absence of document overflow. There are 120 full-page screenshots plus 25 tablet SVG detail captures in ignored `artifacts/`. The completed paths and notebook surfaces were visually reviewed alongside the common notebook tile treatment. The pencil is checked against the actual point on each animated path, and original Kannada joins and guide/ink widths are verified numerically.

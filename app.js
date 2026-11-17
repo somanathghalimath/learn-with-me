@@ -75,7 +75,10 @@ function announceCurrentLetter() {
   const text =
     letter.announcement ||
     (prefix ? prefix + letter.name.toUpperCase() : letter.name);
-  pictureSpeech.speak(text, { lang: getActiveSet().speechLang || "en-IN" });
+  pictureSpeech.speak(text, {
+    lang: getActiveSet().speechLang || "en-IN",
+    ...letter.speechOptions,
+  });
 }
 // Direct lesson links animate immediately but wait for a trusted gesture for audio.
 document.addEventListener(
