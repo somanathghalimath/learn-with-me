@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4efdf" />
+    <meta
+      name="description"
+      content="A little digital notebook for LKG. Watch how to write English, numbers and Kannada, then try it in your own notebook."
+    />
+    <title>Learn With Me</title>
+    <link rel="icon" href="assets/notebook.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="kannada.js" defer></script>
+    <script src="kannada-vyanjana.js" defer></script>
+    <script src="kannada-notebook.js" defer></script>
+    <script src="letters.js" defer></script>
+    <script src="composition.js" defer></script>
+    <script src="curriculum.js" defer></script>
+    <script src="speech.js" defer></script>
+    <script src="app.js" defer></script>
+    <script src="navigation.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to notebook</a>
+    <div class="app-shell">
+      <header class="app-header">
+        <a class="brand" href="#/" aria-label="Learn With Me home"
+          ><img src="assets/notebook.svg" alt="" width="38" height="42" /><span
+            >Learn With Me<small
+              >A little notebook. A little every day.</small
+            ></span
+          ></a
+        >
+        <span class="header-note"
+          >Made for little hands &amp; big discoveries
+          <span aria-hidden="true">✳</span></span
+        >
+        <a class="home-button" href="#/" aria-label="Home"
+          ><svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="m3 11 9-8 9 8M5 10v11h14V10M9 21v-7h6v7" /></svg
+        ></a>
+      </header>
+      <nav class="navigation" aria-label="Notebook navigation">
+        <a id="backLink" href="#/">← Back</a>
+        <ol id="breadcrumbs"></ol>
+      </nav>
+      <main id="main" tabindex="-1">
+        <section id="selectionPage" aria-labelledby="pageTitle">
+          <div class="page-intro">
+            <span class="eyebrow" id="pageEyebrow">YOUR LEARNING SHELF</span>
+            <h1 id="pageTitle">Little pages,<br />big beginnings.</h1>
+            <p id="pageDescription">
+              Pick up a notebook. Let’s learn something together.
+            </p>
+            <svg
+              class="intro-doodle"
+              viewBox="0 0 180 130"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M25 88q45-8 65 7 20-15 62-8l-4-64q-30-7-58 7-27-15-61-6Z"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linejoin="round"
+              />
+              <path
+                d="m90 31 0 63M41 42l31 4M40 55l29 3M40 68l27 3m42-25 26-6m-25 19 27-5m-26 18 23-4M13 38l-8-6m17-5-3-10m142 65 12 3M146 10l4-8m8 19 12-4"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+          <div class="notebook-shelf" id="notebookShelf"></div>
+          <div class="workbook-note">
+            <span class="note-pencil" aria-hidden="true">✎</span>
+            <p>
+              <strong>Watch here. Write in your notebook.</strong><br />A
+              pencil, a real notebook, and a little curiosity are all you need.
+            </p>
+          </div>
+        </section>
+        <section id="lessonPage" aria-label="Handwriting demonstration" hidden>
+          <div class="lesson-topline">
+            <h1 id="categoryTitle">Capital Letters</h1>
+            <span class="paper-tab"
+              >LKG · <span id="subjectLabel">English</span></span
+            >
+          </div>
+          <div class="lesson-card">
+            <div class="lesson-heading">
+              <button
+                class="icon-button"
+                id="previousButton"
+                type="button"
+                aria-label="Previous exercise"
+              >
+                ←
+              </button>
+              <div class="letter-title">
+                <span class="letter-count" id="letterCount"></span>
+                <h2 id="letter-heading"></h2>
+              </div>
+              <button
+                class="icon-button"
+                id="nextButton"
+                type="button"
+                aria-label="Next exercise"
+              >
+                →
+              </button>
+            </div>
+            <div class="notebook-surface">
+              <div class="page-margin" aria-hidden="true"></div>
+              <div
+                class="canvas-scroll"
+                tabindex="0"
+                role="region"
+                aria-label="Notebook page. Watch the pencil write."
+              >
+                <div class="canvas-wrap">
+                  <svg
+                    id="letterCanvas"
+                    class="letter-canvas"
+                    viewBox="0 0 400 400"
+                    role="img"
+                    aria-labelledby="svgTitle svgDescription"
+                  >
+                    <title id="svgTitle">How to write uppercase A</title>
+                    <desc id="svgDescription">
+                      The strokes appear one at a time in writing order.
+                    </desc>
+                    <defs id="svgDefs"></defs>
+                    <g
+                      id="notebookLayer"
+                      class="notebook-lines"
+                      aria-hidden="true"
+                    ></g>
+                    <g
+                      id="guideLayer"
+                      class="guide-layer"
+                      aria-hidden="true"
+                    ></g>
+                    <g
+                      id="strokeLayer"
+                      class="stroke-layer"
+                      aria-hidden="true"
+                    ></g>
+                    <circle
+                      id="startDot"
+                      class="start-dot"
+                      r="8"
+                      aria-hidden="true"
+                    ></circle>
+                    <g id="pencilTip" class="pencil-tip" aria-hidden="true">
+                      <path
+                        class="pencil-wood"
+                        d="M 0 0 L -12 -6 L -12 6 Z"
+                      ></path>
+                      <path
+                        class="pencil-lead"
+                        d="M 0 0 L -4 -2 L -4 2 Z"
+                      ></path>
+                      <rect
+                        class="pencil-body"
+                        x="-34"
+                        y="-6"
+                        width="22"
+                        height="12"
+                        rx="2"
+                      ></rect>
+                      <rect
+                        class="pencil-band"
+                        x="-39"
+                        y="-6"
+                        width="6"
+                        height="12"
+                      ></rect>
+                      <path
+                        class="pencil-eraser"
+                        d="M -44 -6 H -39 V 6 H -44 Q -47 6 -47 3 V -3 Q -47 -6 -44 -6 Z"
+                      ></path>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="letter-feedback">
+              <p
+                id="strokeInstruction"
+                class="stroke-instruction"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+              ></p>
+            </div>
+            <div class="playback-bar">
+              <div
+                class="playback-controls"
+                role="group"
+                aria-label="Playback controls"
+              >
+                <button
+                  class="control-button primary"
+                  id="playButton"
+                  type="button"
+                >
+                  <span aria-hidden="true">▶</span> Play</button
+                ><button class="control-button" id="pauseButton" type="button">
+                  <span aria-hidden="true">Ⅱ</span> Pause</button
+                ><button class="control-button" id="replayButton" type="button">
+                  <span aria-hidden="true">↻</span> Replay</button
+                ><button
+                  id="hearButton"
+                  class="control-button"
+                  type="button"
+                  hidden
+                >
+                  <span aria-hidden="true">♪</span> Hear
+                </button>
+              </div>
+              <label class="speed-option" for="speedSelect"
+                >Speed
+                <select id="speedSelect">
+                  <option value="slow">Slow</option>
+                  <option value="normal" selected>Normal</option>
+                  <option value="fast">Fast</option>
+                </select></label
+              >
+            </div>
+          </div>
+          <details class="exercise-index" id="exerciseIndex">
+            <summary>
+              Find a page <span id="indexHint">A–Z</span
+              ><span aria-hidden="true">⌄</span>
+            </summary>
+            <div
+              id="indexList"
+              class="index-list"
+              aria-label="Choose an exercise"
+            ></div>
+          </details>
+          <p class="lesson-note">
+            Watch the pencil, then try it in your own notebook.
+          </p>
+        </section>
+      </main>
+      <footer>
+        <span>Small steps. Beautiful beginnings.</span
+        ><span class="footer-flower" aria-hidden="true">✳</span
+        ><a href="ATTRIBUTION.md">Made with care · Credits</a>
+      </footer>
+    </div>
+    <noscript
+      >This notebook needs JavaScript to demonstrate handwriting. Please enable
+      JavaScript in your browser.</noscript
+    >
+  </body>
+</html>

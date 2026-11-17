@@ -1,0 +1,572 @@
+"use strict";
+
+const SVG_NS = "http://www.w3.org/2000/svg";
+const DEFAULT_SET_KEY = "uppercase";
+const NEXT_STROKE_DELAY = 500;
+
+const SPEEDS = {
+  slow: { drawDuration: 1900 },
+  normal: { drawDuration: 1250 },
+  fast: { drawDuration: 800 },
+};
+
+const elements = {
+  svgDefs: document.querySelector("#svgDefs"),
+  notebookLayer: document.querySelector("#notebookLayer"),
+  guideLayer: document.querySelector("#guideLayer"),
+  strokeLayer: document.querySelector("#strokeLayer"),
+  startDot: document.querySelector("#startDot"),
+  pencilTip: document.querySelector("#pencilTip"),
+  letterHeading: document.querySelector("#letter-heading"),
+  letterCount: document.querySelector("#letterCount"),
+  svgTitle: document.querySelector("#svgTitle"),
+  playButton: document.querySelector("#playButton"),
+  pauseButton: document.querySelector("#pauseButton"),
+  replayButton: document.querySelector("#replayButton"),
+  previousButton: document.querySelector("#previousButton"),
+  nextButton: document.querySelector("#nextButton"),
+  speedSelect: document.querySelector("#speedSelect"),
+  strokeInstruction: document.querySelector("#strokeInstruction"),
+  hearButton: document.querySelector("#hearButton"),
+};
+
+const state = {
+  activeSetKey: DEFAULT_SET_KEY,
+  letterIndex: 0,
+  strokeIndex: 0,
+  phase: "ready", // ready | drawing | preparing | paused | complete
+  phaseBeforePause: null,
+  phaseStartedAt: 0,
+  phaseElapsed: 0,
+  animationFrame: null,
+  strokeElements: [],
+  strokeLengths: [],
+  revealElement: null,
+  revealMaskId: null,
+};
+
+function getAvailableSetEntries() {
+  return Object.entries(window.LETTER_LIBRARY).filter(
+    ([, set]) => Array.isArray(set.characters) && set.characters.length > 0,
+  );
+}
+
+function getActiveSet() {
+  return window.LETTER_LIBRARY[state.activeSetKey];
+}
+
+function getCharacters() {
+  return getActiveSet().characters;
+}
+
+let hasAnnouncedLetter = false;
+
+let audioUnlocked = false;
+function announceCurrentLetter() {
+  if (!audioUnlocked) return;
+  const letter = getCharacters()[state.letterIndex];
+  hasAnnouncedLetter = true;
+  const prefix =
+    state.activeSetKey === "uppercase"
+      ? "Capital "
+      : state.activeSetKey === "lowercase"
+        ? "Small "
+        : "";
+  const text =
+    letter.announcement ||
+    (prefix ? prefix + letter.name.toUpperCase() : letter.name);
+  pictureSpeech.speak(text, { lang: getActiveSet().speechLang || "en-IN" });
+}
+// Direct lesson links animate immediately but wait for a trusted gesture for audio.
+document.addEventListener(
+  "click",
+  () => {
+    audioUnlocked = true;
+  },
+  { capture: true },
+);
+document.addEventListener(
+  "keydown",
+  () => {
+    audioUnlocked = true;
+  },
+  { capture: true },
+);
+
+function createPath(pathData, className) {
+  const path = document.createElementNS(SVG_NS, "path");
+  path.setAttribute("d", pathData);
+  if (className) path.setAttribute("class", className);
+  return path;
+}
+
+function createGlyphText(letter, activeSet, className) {
+  const text = document.createElementNS(SVG_NS, "text");
+  text.textContent = letter.glyph || letter.name;
+  text.setAttribute("x", letter.glyphX || activeSet.glyphX || 200);
+  text.setAttribute("y", letter.glyphY || activeSet.glyphY || 205);
+  text.setAttribute(
+    "font-size",
+    letter.glyphFontSize || activeSet.glyphFontSize || 238,
+  );
+  text.setAttribute("text-anchor", "middle");
+  text.setAttribute("dominant-baseline", "central");
+  text.setAttribute("class", className);
+  return text;
+}
+
+function createRevealMask(maskId, letter, activeSet) {
+  const mask = document.createElementNS(SVG_NS, "mask");
+  mask.setAttribute("id", maskId);
+  mask.setAttribute("maskUnits", "userSpaceOnUse");
+
+  letter.strokes.forEach((stroke) => {
+    const maskPath = createPath(stroke.d, "reveal-mask-stroke");
+    maskPath.style.fill = "none";
+    maskPath.style.stroke = "#fff";
+    maskPath.style.strokeLinecap = "butt";
+    maskPath.style.strokeLinejoin = "round";
+    maskPath.style.strokeWidth = `${letter.revealStrokeWidth || activeSet.revealStrokeWidth || 72}`;
+    mask.append(maskPath);
+
+    const length = maskPath.getTotalLength();
+    maskPath.style.strokeDasharray = `${length} ${length}`;
+    maskPath.style.strokeDashoffset = `${length}`;
+    maskPath.style.opacity = "0";
+
+    state.strokeElements.push(maskPath);
+    state.strokeLengths.push(length);
+  });
+
+  return mask;
+}
+
+function renderLetter() {
+  stopAnimation();
+
+  const activeSet = getActiveSet();
+  const characters = getCharacters();
+  state.letterIndex = Math.min(state.letterIndex, characters.length - 1);
+  const letter = characters[state.letterIndex];
+  const viewportWidth = letter.viewportWidth || 400;
+  document
+    .querySelector("#letterCanvas")
+    .setAttribute("viewBox", `0 0 ${viewportWidth} 400`);
+  document
+    .querySelector(".canvas-wrap")
+    .style.setProperty("--page-ratio", `${viewportWidth} / 400`);
+  document
+    .querySelector(".canvas-wrap")
+    .style.setProperty("--page-width", `${viewportWidth * 1.1}px`);
+  document
+    .querySelector(".canvas-wrap")
+    .style.setProperty("--compact-page-width", `${viewportWidth * 0.85}px`);
+  document
+    .querySelector(".canvas-wrap")
+    .classList.toggle("wide", viewportWidth > 400);
+  elements.notebookLayer.replaceChildren();
+  const kannadaRuling = activeSet.notebookGuides === "kannada";
+  if (activeSet.notebookGuides === "grid") {
+    for (let x = 0; x <= viewportWidth; x += 80)
+      addNotebookLine(x, 0, x, 400, "grid-line");
+    for (let y = 0; y <= 400; y += 80)
+      addNotebookLine(0, y, viewportWidth, y, "grid-line");
+  } else if (activeSet.notebookGuides) {
+    const lines = kannadaRuling
+      ? window.KANNADA_NOTEBOOK.lines
+      : [70, 160, 250, 340];
+    lines.forEach((y, index) => {
+      const line = document.createElementNS(SVG_NS, "line");
+      line.setAttribute("x1", "0");
+      line.setAttribute("x2", viewportWidth);
+      line.setAttribute("y1", y);
+      line.setAttribute("y2", y);
+      line.setAttribute(
+        "class",
+        kannadaRuling
+          ? "kannada-line"
+          : index === 0 || index === 3
+            ? "outer-line"
+            : "inner-line",
+      );
+      elements.notebookLayer.append(line);
+    });
+  }
+  document.querySelector("#svgDescription").textContent = kannadaRuling
+    ? "Two notebook lines guide the main Kannada letter body. Upper curls and lower marks can extend beyond them."
+    : activeSet.notebookGuides === "grid"
+      ? "Square notebook cells guide digit height and spacing. Digits are written from left to right."
+      : activeSet.notebookGuides
+        ? "Four notebook lines: red at the top and bottom, blue in the middle. The letter forms one stroke at a time."
+        : "The strokes appear one at a time in writing order.";
+  elements.svgDefs.replaceChildren();
+  elements.guideLayer.replaceChildren();
+  elements.strokeLayer.replaceChildren();
+  state.strokeElements = [];
+  state.strokeLengths = [];
+  state.revealElement = null;
+  state.revealMaskId = null;
+
+  if (activeSet.renderMode === "glyphReveal") {
+    const maskId = `letterRevealMask-${state.activeSetKey}-${state.letterIndex}`;
+    const mask = createRevealMask(maskId, letter, activeSet);
+    const revealText = createGlyphText(letter, activeSet, "glyph-reveal-text");
+    revealText.setAttribute("mask", `url(#${maskId})`);
+
+    elements.svgDefs.append(mask);
+    elements.guideLayer.append(
+      createGlyphText(letter, activeSet, "glyph-guide-text"),
+    );
+    elements.strokeLayer.append(revealText);
+    state.revealElement = revealText;
+    state.revealMaskId = maskId;
+  } else {
+    const strokeWidth = letter.strokeWidth || activeSet.strokeWidth;
+
+    letter.strokes.forEach((stroke) => {
+      const guidePath = createPath(stroke.d);
+      const width = stroke.strokeWidth || strokeWidth;
+      if (width) guidePath.style.strokeWidth = `${width}`;
+      elements.guideLayer.append(guidePath);
+
+      const animatedPath = createPath(stroke.d);
+      if (width) animatedPath.style.strokeWidth = `${width}`;
+      elements.strokeLayer.append(animatedPath);
+      const length = animatedPath.getTotalLength();
+      animatedPath.style.strokeDasharray = `${length} ${length}`;
+      animatedPath.style.strokeDashoffset = `${length}`;
+      animatedPath.style.opacity = "0";
+
+      state.strokeElements.push(animatedPath);
+      state.strokeLengths.push(length);
+    });
+  }
+
+  state.strokeIndex = 0;
+  state.phase = "ready";
+  state.phaseElapsed = 0;
+  hideStartDot();
+  hidePencil();
+  updateStrokeInstruction();
+  updateLetterLabels();
+  window.dispatchEvent(new Event("exercisechange"));
+  updateControls();
+}
+
+function updateLetterLabels() {
+  const activeSet = getActiveSet();
+  const characters = getCharacters();
+  const letter = characters[state.letterIndex];
+  const headingLabel = activeSet.headingLabel || activeSet.label;
+  elements.letterHeading.textContent = `${headingLabel} ${letter.name}`;
+  elements.letterCount.textContent = `${activeSet.itemLabel} ${state.letterIndex + 1} of ${characters.length}`;
+  elements.svgTitle.textContent = `How to write ${headingLabel.toLowerCase()} ${letter.name}`;
+  elements.hearButton.setAttribute(
+    "aria-label",
+    `Hear ${headingLabel.toLowerCase()} ${letter.name}`,
+  );
+}
+
+function updateControls() {
+  const characters = getCharacters();
+  const isPlaying = state.phase === "drawing" || state.phase === "preparing";
+  elements.playButton.disabled = isPlaying;
+  elements.pauseButton.disabled = !isPlaying;
+  elements.previousButton.disabled = state.letterIndex === 0;
+  elements.nextButton.disabled = state.letterIndex === characters.length - 1;
+}
+
+function showStartDot(path) {
+  const start = path.getPointAtLength(0);
+  elements.startDot.setAttribute("cx", start.x);
+  elements.startDot.setAttribute("cy", start.y);
+  elements.startDot.classList.add("visible");
+}
+
+function hideStartDot() {
+  elements.startDot.classList.remove("visible");
+}
+
+function updateStrokeInstruction() {
+  elements.strokeInstruction.hidden = false;
+  const letter = getCharacters()[state.letterIndex];
+  const step = `Stroke ${state.strokeIndex + 1} of ${letter.strokes.length}`;
+  if (state.phase === "preparing") {
+    const stroke = letter.strokes[state.strokeIndex];
+    const nextCharacter =
+      stroke.beginsCharacter && stroke.characterIndex > 0
+        ? ` Next, ${stroke.characterName}.`
+        : "";
+    elements.strokeInstruction.textContent = `${step} · ${state.strokeIndex ? "Lift your pencil." : ""}${nextCharacter} Start at the green dot.`;
+  } else if (state.phase === "complete") {
+    elements.strokeInstruction.textContent = "Now try it in your notebook.";
+  } else {
+    elements.strokeInstruction.textContent = `${step} · ${letter.strokes[state.strokeIndex].prompt}`;
+  }
+}
+
+function beginLetter() {
+  if (getActiveSet().startHold) prepareNextStroke();
+  else startCurrentStroke();
+}
+
+function positionPencil(path, distance) {
+  const pathLength = path.getTotalLength();
+  const clampedDistance = Math.max(0, Math.min(distance, pathLength));
+  const point = path.getPointAtLength(clampedDistance);
+  const pointBefore = path.getPointAtLength(Math.max(0, clampedDistance - 2));
+  const pointAfter = path.getPointAtLength(
+    Math.min(pathLength, clampedDistance + 2),
+  );
+  const angle =
+    (Math.atan2(pointAfter.y - pointBefore.y, pointAfter.x - pointBefore.x) *
+      180) /
+    Math.PI;
+
+  elements.pencilTip.setAttribute(
+    "transform",
+    `translate(${point.x} ${point.y}) rotate(${angle})`,
+  );
+  elements.pencilTip.classList.add("visible");
+}
+
+function hidePencil() {
+  elements.pencilTip.classList.remove("visible");
+}
+
+function startCurrentStroke() {
+  const path = state.strokeElements[state.strokeIndex];
+  const length = state.strokeLengths[state.strokeIndex];
+  path.style.strokeDasharray = `${length} ${length}`;
+  path.style.opacity = "1";
+  state.phase = "drawing";
+  state.phaseElapsed = 0;
+  state.phaseStartedAt = performance.now();
+  showStartDot(path);
+  positionPencil(path, 0);
+  updateStrokeInstruction();
+  updateControls();
+  requestTick();
+}
+
+function tick(now) {
+  state.animationFrame = null;
+
+  if (state.phase === "drawing") {
+    updateDrawing(now);
+  } else if (state.phase === "preparing") {
+    updatePreparing(now);
+  }
+
+  if (state.phase === "drawing" || state.phase === "preparing") {
+    requestTick();
+  }
+}
+
+function updateDrawing(now) {
+  const settings = SPEEDS[elements.speedSelect.value];
+  const elapsed = state.phaseElapsed + (now - state.phaseStartedAt);
+  const length = state.strokeLengths[state.strokeIndex];
+  const durationScale = getActiveSet().durationByLength
+    ? getActiveSet().linearMotion
+      ? Math.max(0.35, length / 220)
+      : Math.max(0.7, Math.min(length / 220, 3.5))
+    : 1;
+  const progress = Math.min(
+    elapsed / (settings.drawDuration * durationScale),
+    1,
+  );
+  const easedProgress = getActiveSet().linearMotion
+    ? progress
+    : 1 - Math.pow(1 - progress, 2);
+  const path = state.strokeElements[state.strokeIndex];
+  state.strokeElements[state.strokeIndex].style.strokeDashoffset =
+    `${length * (1 - easedProgress)}`;
+  positionPencil(path, length * easedProgress);
+  if (getActiveSet().startHold ? elapsed >= 300 : progress > 0.04)
+    hideStartDot();
+
+  if (progress >= 1) {
+    const completedPath = state.strokeElements[state.strokeIndex];
+    completedPath.style.strokeDashoffset = "0";
+    // Remove the animation mask so the completed stroke is always fully solid.
+    completedPath.style.strokeDasharray = "none";
+    hideStartDot();
+    hidePencil();
+    const isLastStroke =
+      state.strokeIndex ===
+      getCharacters()[state.letterIndex].strokes.length - 1;
+    if (isLastStroke) {
+      if (state.revealElement) {
+        state.revealElement.removeAttribute("mask");
+      }
+      state.phase = "complete";
+      updateStrokeInstruction();
+      updateControls();
+    } else {
+      state.strokeIndex += 1;
+      prepareNextStroke();
+    }
+  }
+}
+
+function prepareNextStroke() {
+  state.phase = "preparing";
+  state.phaseStartedAt = performance.now();
+  state.phaseElapsed = 0;
+  showStartDot(state.strokeElements[state.strokeIndex]);
+  hidePencil();
+  updateStrokeInstruction();
+  updateControls();
+  requestTick();
+}
+
+function updatePreparing(now) {
+  const elapsed = state.phaseElapsed + (now - state.phaseStartedAt);
+  if (elapsed >= (getActiveSet().startHold || NEXT_STROKE_DELAY))
+    startCurrentStroke();
+}
+
+function requestTick() {
+  if (state.animationFrame === null) {
+    state.animationFrame = requestAnimationFrame(tick);
+  }
+}
+
+function stopAnimation() {
+  if (state.animationFrame !== null) {
+    cancelAnimationFrame(state.animationFrame);
+    state.animationFrame = null;
+  }
+}
+
+function pause() {
+  if (state.phase !== "drawing" && state.phase !== "preparing") return;
+  pictureSpeech.cancel();
+
+  state.phaseElapsed += performance.now() - state.phaseStartedAt;
+  state.phaseBeforePause = state.phase;
+  state.phase = "paused";
+  stopAnimation();
+  // Keep the current pencil position visible while paused.
+  updateControls();
+}
+
+function play() {
+  announceCurrentLetter();
+  if (state.phase === "paused") {
+    state.phase = state.phaseBeforePause;
+    state.phaseStartedAt = performance.now();
+    if (state.phase === "drawing") {
+      showStartDot(state.strokeElements[state.strokeIndex]);
+      const length = state.strokeLengths[state.strokeIndex];
+      const offset = Number.parseFloat(
+        state.strokeElements[state.strokeIndex].style.strokeDashoffset,
+      );
+      positionPencil(state.strokeElements[state.strokeIndex], length - offset);
+    } else if (getActiveSet().startHold) {
+      showStartDot(state.strokeElements[state.strokeIndex]);
+    }
+    updateControls();
+    requestTick();
+    return;
+  }
+
+  if (state.phase === "complete") resetStrokes();
+  beginLetter();
+}
+
+function resetStrokes() {
+  stopAnimation();
+  state.strokeIndex = 0;
+  state.phaseElapsed = 0;
+  state.phaseBeforePause = null;
+  if (state.revealElement && state.revealMaskId) {
+    state.revealElement.setAttribute("mask", `url(#${state.revealMaskId})`);
+  }
+  state.strokeElements.forEach((path, index) => {
+    path.style.strokeDasharray = `${state.strokeLengths[index]} ${state.strokeLengths[index]}`;
+    path.style.strokeDashoffset = `${state.strokeLengths[index]}`;
+    path.style.opacity = "0";
+  });
+  hideStartDot();
+  hidePencil();
+}
+
+function replay() {
+  resetStrokes();
+  state.phase = "ready";
+  updateControls();
+  beginLetter();
+  announceCurrentLetter();
+}
+
+function changeLetter(direction) {
+  const nextIndex = state.letterIndex + direction;
+  if (nextIndex < 0 || nextIndex >= getCharacters().length) return;
+  state.letterIndex = nextIndex;
+  renderLetter();
+  beginLetter();
+  announceCurrentLetter();
+}
+
+function changeSet(setKey) {
+  if (!window.LETTER_LIBRARY[setKey]?.characters.length) return;
+  state.activeSetKey = setKey;
+  state.letterIndex = 0;
+  renderLetter();
+  beginLetter();
+  announceCurrentLetter();
+  window.dispatchEvent(new Event("categorychange"));
+}
+
+elements.hearButton.hidden = !pictureSpeech.supported;
+elements.hearButton.addEventListener("click", announceCurrentLetter);
+// Browsers generally require a gesture before speech. A tap on the lesson can
+// introduce the initial letter; navigation/replay handlers already announce it.
+document.addEventListener("click", (event) => {
+  if (
+    !hasAnnouncedLetter &&
+    event.target.closest(".lesson-card") &&
+    !event.target.closest("a, select, #pauseButton")
+  )
+    announceCurrentLetter();
+});
+
+elements.playButton.addEventListener("click", play);
+elements.pauseButton.addEventListener("click", pause);
+elements.replayButton.addEventListener("click", replay);
+elements.previousButton.addEventListener("click", () => changeLetter(-1));
+elements.nextButton.addEventListener("click", () => changeLetter(1));
+
+elements.speedSelect.addEventListener("change", () => {
+  const now = performance.now();
+  const elapsed =
+    state.phaseElapsed +
+    (state.phase === "drawing" ? now - state.phaseStartedAt : 0);
+  // Preserve the fractional drawing position across speed changes and pauses.
+  if (
+    state.phase === "drawing" ||
+    (state.phase === "paused" && state.phaseBeforePause === "drawing")
+  ) {
+    const previousDuration = SPEEDS[state.speed || "normal"].drawDuration;
+    state.phaseElapsed =
+      (elapsed * SPEEDS[elements.speedSelect.value].drawDuration) /
+      previousDuration;
+    state.phaseStartedAt = now;
+  }
+  state.speed = elements.speedSelect.value;
+});
+
+function addNotebookLine(x1, y1, x2, y2, className) {
+  const line = document.createElementNS(SVG_NS, "line");
+  for (const [key, value] of Object.entries({
+    x1,
+    y1,
+    x2,
+    y2,
+    class: className,
+  }))
+    line.setAttribute(key, value);
+  elements.notebookLayer.append(line);
+}
