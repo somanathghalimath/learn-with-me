@@ -171,19 +171,16 @@ window.CURRICULUM = (() => {
     english: {
       title: "English",
       sample: "ABC",
-      description: "Letters, little and tall",
       sets: ["uppercase", "lowercase", "combination"],
     },
     maths: {
       title: "Maths",
       sample: "123",
-      description: "A little number notebook",
       sets: ["numbers", "numerals"],
     },
     kannada: {
       title: "Kannada",
       sample: "ಅ ಆ ಇ",
-      description: "Our Kannada notebook",
       sets: ["kannadaSwaras", "kannadaVyanjanas"],
     },
   };

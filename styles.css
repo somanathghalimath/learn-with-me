@@ -890,8 +890,7 @@ summary span:first-child {
 }
 .is-home .navigation,
 .is-home .page-intro,
-.is-home .workbook-note,
-.is-home footer {
+.is-home .workbook-note {
   display: none;
 }
 .is-home .tile-label,
@@ -992,3 +991,28 @@ summary span:first-child {
     margin-left: auto;
   }
 }
+
+/* Functional page names and controls carry the interface without decorative copy. */
+.app-header .home-button {
+  margin-left: auto;
+}
+.page-intro {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.page-intro h1 {
+  font-size: clamp(34px, 4vw, 48px);
+}
+footer {
+  justify-content: flex-end;
+}
+@media (max-width: 650px) {
+  .is-home .app-header {
+    height: 84px;
+    min-height: 84px;
+    padding: 12px 0;
+    flex-wrap: nowrap;
+  }
+}
+
+.intro-doodle{width:90px;top:8px;right:10px;}

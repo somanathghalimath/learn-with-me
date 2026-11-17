@@ -16,7 +16,7 @@
     uppercase: "26 capital letters",
     lowercase: "26 small letters",
     combination: "26 letter pairs",
-    numbers: "50 numbers to discover",
+    numbers: "50 numbers",
     numerals: "10 number names",
     kannadaSwaras: "15 swaras & marks",
     kannadaVyanjanas: "34 consonants",
@@ -31,9 +31,6 @@
     const binding = document.createElement("span");
     binding.className = "tile-binding";
     binding.setAttribute("aria-hidden", "true");
-    const label = document.createElement("span");
-    label.className = "tile-label";
-    label.textContent = "MY LEARNING NOTEBOOK";
     const characters = document.createElement("span");
     characters.className = "tile-sample";
     characters.textContent = sample;
@@ -49,7 +46,9 @@
     const open = document.createElement("span");
     open.className = "tile-open";
     open.textContent = "Open notebook  ↗";
-    a.append(binding, label, characters, name, sub, desc, open);
+    a.append(binding, characters, name, sub);
+    if (description) a.append(desc);
+    a.append(open);
     if (parts.length === 1) {
       a.setAttribute("aria-label", "Open LKG notebook");
       const illustration = document.createElement("img");
@@ -149,27 +148,15 @@
       const shelf = $("#notebookShelf");
       shelf.replaceChildren();
       if (!route.length) {
-        $("#pageEyebrow").textContent = "YOUR LEARNING SHELF";
-        $("#pageTitle").innerHTML = "Little pages,<br>big beginnings.";
-        $("#pageDescription").textContent =
-          "Pick up a notebook. Let’s learn something together.";
-        shelf.append(
-          tile("LKG", "Aa  123", "Our first little lessons", ["lkg"]),
-        );
+        $("#pageTitle").textContent = "Learn With Me";
+        shelf.append(tile("LKG", "Aa  123", "", ["lkg"]));
       } else if (!route[1]) {
-        $("#pageEyebrow").textContent = "LOWER KINDERGARTEN";
-        $("#pageTitle").textContent = "What shall we learn today?";
-        $("#pageDescription").textContent =
-          "Three little notebooks, so much to discover.";
+        $("#pageTitle").textContent = "LKG";
         for (const [key, s] of Object.entries(CURRICULUM.subjects))
-          shelf.append(tile(s.title, s.sample, s.description, ["lkg", key]));
+          shelf.append(tile(s.title, s.sample, "", ["lkg", key]));
       } else {
         const subject = CURRICULUM.subjects[route[1]];
-        $("#pageEyebrow").textContent = `LKG / ${subject.title.toUpperCase()}`;
-        $("#pageTitle").textContent =
-          `Let’s write ${subject.title === "Maths" ? "numbers" : subject.title === "English" ? "in English" : "in Kannada"}.`;
-        $("#pageDescription").textContent =
-          "Choose a notebook and follow the pencil.";
+        $("#pageTitle").textContent = subject.title;
         for (const key of subject.sets) {
           const set = LETTER_LIBRARY[key];
           shelf.append(

@@ -42,14 +42,22 @@ for (const [name, entry] of Object.entries(manifest.adaptedFiles || {})) {
     await page.evaluate(() => document.fonts.ready);
     // Decorative home copy is hidden; the notebook title and action remain functional.
     assert.equal(await page.locator(".page-intro").isVisible(), false);
-    assert.equal(await page.locator(".workbook-note").isVisible(), false);
+    assert.equal(await page.locator(".workbook-note").count(), 0);
     assert.equal(
       await page.getByRole("heading", { name: "LKG", exact: true }).isVisible(),
       true,
     );
     assert.equal(
-      (await page.locator(".header-note").innerText()).trim(),
-      "Made for little hands and big discoveries",
+      await page
+        .locator(
+          ".header-note,.brand small,.eyebrow,#pageDescription,.workbook-note,.lesson-note,.tile-label,.footer-flower",
+        )
+        .count(),
+      0,
+    );
+    assert.equal(
+      (await page.locator("footer").textContent()).trim(),
+      "Credits",
     );
     // Complete hierarchy through actual links, including Back and Home.
     assert.equal(await page.locator(".notebook-tile").count(), 1);
@@ -77,9 +85,8 @@ for (const [name, entry] of Object.entries(manifest.adaptedFiles || {})) {
     ]) {
       await page.locator(`a[href="#/lkg/${subject}"]`).click();
       await page.waitForFunction(
-        () =>
-          document.querySelector("#pageDescription").textContent ===
-          "Choose a notebook and follow the pencil.",
+        (title) => document.querySelector("#pageTitle").textContent === title,
+        subject[0].toUpperCase() + subject.slice(1),
       );
       assert.deepEqual(
         await page.locator(".notebook-tile h2").allTextContents(),

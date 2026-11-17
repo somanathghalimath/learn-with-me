@@ -93,4 +93,4 @@ Actual voice availability, accent and audible pronunciation depend on the device
 
 [Attribution](ATTRIBUTION.md) · [License](LICENSE.md) · [Original module documentation](docs/ORIGINAL-README.md) · [Requested scope](docs/REQUEST.md)
 
-The home page removes decorative headings and explanatory copy while retaining the app identity, the “Made for little hands and big discoveries” phrase, and an illustrated LKG notebook tile with its functional title and action. [Number-square research and Kannada correction](review/NOTEBOOK-CORRECTIONS.md) documents the requested convention and source checks.
+All pages use functional names and controls: LKG/subject/category titles, notebook labels, exercise counts, movement cues, speed and index controls, and Credits. Decorative slogans, taglines, stationery labels and explanatory filler have been removed. [Number-square research and Kannada correction](review/NOTEBOOK-CORRECTIONS.md) documents the requested convention and source checks.
